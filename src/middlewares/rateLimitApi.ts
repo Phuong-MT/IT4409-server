@@ -50,11 +50,10 @@ export const rateLimitLoginApi = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     keyGenerator: (req) => {
-        const authHeader = req.headers["authorization"];
-        if (!authHeader) {
+        const token = req.cookies["access_token"];
+        if (!token) {
             return req.ip;
         }
-        const token = authHeader.split(" ")[1];
         return token || req.ip;
     },
     handler: (req, res) => {
