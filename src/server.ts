@@ -5,10 +5,10 @@ import express from "express";
 import helmet from "helmet";
 import { AddressInfo } from "net";
 import LoginRouter from "./routes/login.router";
+import connectDatabase from "./utils/connectDB";
 
 const dotenv = require("dotenv");
 const result = dotenv.config();
-const listOkay: any[] = [];
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -52,10 +52,7 @@ const server = app.listen(process.env.PORT || 4001, function () {
             ? addressInfo.port
             : "";
     console.log("Server listening on port " + port);
-    // connectDatabase(() => {
-    //     listOkay.push("mongo");
-    //     checkAllService(listOkay);
-    // });
+    connectDatabase();
     // connectRedis(() => {
     //     listOkay.push("redis");
     //     checkAllService(listOkay);
