@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "yarn && NODE_OPTIONS='--max-old-space-size=8000' ts-node-dev --respawn --transpile-only src/server.ts"
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8000 ts-node-dev --respawn --transpile-only src/server.ts"
   },
   "repository": {
     "type": "git",
@@ -77,6 +77,7 @@
     "@types/multer": "^2.0.0",
     "@types/node": "^24.7.2",
     "@types/node-fetch": "^2.6.13",
+    "cross-env": "^10.1.0",
     "depcheck": "^1.4.7",
     "eslint": "^9.37.0",
     "globals": "^16.4.0",
