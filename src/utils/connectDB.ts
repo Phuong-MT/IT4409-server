@@ -4,7 +4,7 @@ const result = dotenv.config();
 
 const IP = process.env.IP_DB || "localhost";
 const PORT = process.env.PORT_DB || 27017;
-const DATABASE = process.env.DATABASE_NAME || "";
+const DATABASE = process.env.DATABASE_NAME || "TEST_DB";
 const AUTH_DATABASE = process.env.AUTH_DATABASE || process.env.DATABASE_NAME;
 const USER = process.env.USER_DB || "";
 const PASS = process.env.PASS_DB || "";

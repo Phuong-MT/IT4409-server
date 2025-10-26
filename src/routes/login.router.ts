@@ -1,7 +1,8 @@
 import { sign } from "crypto";
 import express from "express";
-import { signUp } from "../controllers/authController";
-
+import { signUp } from "../services/login.service";
+import { validate } from "../middlewares/validate";
+import { registerSchema } from "../dto/register.dto";
 const LoginRouter = express.Router();
 
 LoginRouter.post("/auth/login", async (req, res) => {
@@ -10,7 +11,7 @@ LoginRouter.post("/auth/login", async (req, res) => {
     console.log("body data: ", body);
     res.status(200).json("success");
 });
-LoginRouter.post("/auth/register", signUp);
+LoginRouter.post("/auth/register",validate(registerSchema), signUp);
 
 
 export default LoginRouter;

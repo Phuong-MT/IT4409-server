@@ -8,14 +8,6 @@ export const signUp = async (req: any, res: any) => {
          const body = req.body;
          const { username, password, email, phoneNumber, dateOfBirth, address } = body;
 
-         if(!username || !password || !email || !phoneNumber || !dateOfBirth) {
-            return res
-            .status(400)
-            .json({ 
-                message: "Missing required fields" 
-            });
-         }
-
          // Check if user already exists (pseudo code)
         const userExists = await UserModel.findOne({ username });
         if(userExists) {
@@ -47,5 +39,4 @@ export const signUp = async (req: any, res: any) => {
         console.error("Error in signUp:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-   
 }
