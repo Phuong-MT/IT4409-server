@@ -4,7 +4,7 @@ import { userTableName } from "./user-model.mongo";
 import { productTableName } from "./product-model.mongo";
 import { Contacts } from "../shared/contacts";
 
-const STATUS = Contacts.Status;
+const STATUS_EVALUATION = Contacts.Status.Evaluation;
 const ObjectId = Schema.Types.ObjectId;
 
 export const evaluationTableName = "Evaluation";
@@ -26,7 +26,11 @@ const evaluationSchema = new Schema<EvaluationModelDocument>(
         parentEvaluationId: { type: ObjectId as any, required: false },
         content: { type: String, required: true },
         rate: { type: Number, required: true },
-        isHide: { type: Number, required: false, default: STATUS.HIDE },
+        isHide: {
+            type: Number,
+            required: false,
+            default: STATUS_EVALUATION.HIDE,
+        },
         imageUrlFeedback: { type: [String], required: false },
     },
     { versionKey: false, timestamps: true }
