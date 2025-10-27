@@ -11,16 +11,16 @@ const ACCESS_TOKEN_TTL = '15m';
 const TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-default-secret';
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
 
-export const signUp = async (req: any, res: any) => {
+export const register = async (req: any, res: any) => {
     try {
          const body = req.body;
          const { username, password, email, phoneNumber, dateOfBirth, address } = body;
 
          // Check if user already exists (pseudo code)
-        const userExists = await UserModel.findOne({ username });
+        const userExists = await UserModel.findOne({ email });
         if(userExists) {
             return res
-            .status(409)
+            .status(403)                    
             .json({ 
                 message: "User already exists" 
             });
@@ -49,7 +49,7 @@ export const signUp = async (req: any, res: any) => {
 }
 
 
-export const signIn = async (req: any, res: any) => {
+export const login = async (req: any, res: any) => {
     try {
          const body = req.body;
          const { email, password } = body;
@@ -70,7 +70,7 @@ export const signIn = async (req: any, res: any) => {
             return res
             .status(401)
             .json({ 
-                message: "Invalid username or password" 
+                message: "Invalid email or password" 
             });
         }
         // Generate token (pseudo code)

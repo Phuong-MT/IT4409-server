@@ -1,6 +1,6 @@
 import { sign } from "crypto";
 import express from "express";
-import { signUp,signIn } from "../services/auth.service";
+import { register,login } from "../services/auth.service";
 import { validate } from "../middlewares/validate";
 import { registerSchema, loginSchema } from "../dto/register.dto";
 const AuthRouter = express.Router();
@@ -11,8 +11,8 @@ const AuthRouter = express.Router();
 //     console.log("body data: ", body);
 //     res.status(200).json("success");
 // });
-AuthRouter.post("/auth/register",validate(registerSchema), signUp);
-AuthRouter.post("/auth/login",validate(loginSchema), signIn);
+AuthRouter.post("/auth/register",validate(registerSchema), register);
+AuthRouter.post("/auth/login",validate(loginSchema), login);
 
 
 
