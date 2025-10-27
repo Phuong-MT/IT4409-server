@@ -1,6 +1,6 @@
 import { sign } from "crypto";
 import express from "express";
-import { register,login } from "../services/auth.service";
+import { register,login, refreshToken } from "../services/auth.service";
 import { validate } from "../middlewares/validate";
 import { registerSchema, loginSchema } from "../dto/auth.dto";
 const AuthRouter = express.Router();
