@@ -91,7 +91,7 @@ export const login = async (req: any, res: any) => {
         // trả refreshToken trong httpOnly cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            secure: true, // Chỉ gửi cookie qua HTTPS trong môi trường production
+            secure: false, // Chỉ gửi cookie qua HTTPS trong môi trường production
             sameSite: 'none', // deploy backend va frontend khac domain
             maxAge: REFRESH_TOKEN_TTL,
         });
