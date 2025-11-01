@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import { AddressInfo } from "net";
-import LoginRouter from "./routes/login.router";
+import AuthRouter from "./routes/auth.router";
 import connectDatabase from "./utils/connectDB";
 
 const dotenv = require("dotenv");
@@ -35,7 +35,7 @@ app.use(
 app.set("trust proxy", true);
 
 try {
-    app.use("/api", LoginRouter);
+    app.use("/api", AuthRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
