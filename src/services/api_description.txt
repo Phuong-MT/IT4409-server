@@ -585,3 +585,264 @@ Refresh token rotation
 Logout & revoke refresh token
 
 Session-based token storage
+
+
+
+Order API Description
+1️⃣ Get Order Detail With Product Info
+
+API: GET /api/orders/:orderId/detail
+
+Description:
+Lấy chi tiết đơn hàng kèm thông tin đầy đủ của sản phẩm.
+
+Join bảng products để lấy thông tin từng sản phẩm trong đơn
+
+Trả về productDetail tương ứng với từng productId
+
+Convert _id sang string để frontend dễ xử lý
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+URL Params:
+
+orderId: string
+
+
+Response – Success (200):
+
+{
+  "_id": "orderId",
+  "sumPrice": 2500000,
+  "listProduct": [
+    {
+      "productId": "productId",
+      "variantId": "variantId",
+      "quantity": 2,
+      "price": 1200000,
+      "productDetail": {
+        "_id": "productId",
+        "title": "Product title",
+        "brand": "Brand name"
+      }
+    }
+  ]
+}
+
+2️⃣ Create Order From Cart
+
+API: POST /api/orders/from-cart
+
+Description:
+Tạo đơn hàng từ giỏ hàng hiện tại của người dùng.
+
+Sử dụng MongoDB Transaction để đảm bảo toàn vẹn dữ liệu
+
+Lấy variant cụ thể từ cart
+
+Tính giá cuối cùng dựa trên variant.price / salePrice
+
+Xóa toàn bộ cart sau khi tạo đơn thành công
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+Request Body:
+
+{
+  "toAddress": "string",
+  "note": "string"
+}
+
+
+Business Rules:
+
+Bỏ qua sản phẩm hoặc variant đã bị xóa
+
+Nếu cart trống → lỗi
+
+Giá được “đóng băng” tại thời điểm tạo đơn
+
+Response – Success (201):
+
+{
+  "_id": "orderId",
+  "sumPrice": 3500000,
+  "statusOrder": "ORDERED"
+}
+
+
+Response – Error:
+
+400 – Cart is empty
+
+500 – Failed to create order
+
+3️⃣ Create Order (Manual / Admin / COD)
+
+API: POST /api/orders
+
+Description:
+Tạo đơn hàng trực tiếp (không qua cart).
+
+Dùng cho admin hoặc kịch bản đặc biệt
+
+Trạng thái đơn mặc định: ORDERED
+
+Authentication:
+✔ Yêu cầu đăng nhập (Admin / Staff)
+
+Request Body:
+
+{
+  "listProduct": [],
+  "userId": "userId",
+  "sumPrice": 1000000,
+  "note": "string",
+  "toAddress": "string",
+  "numberPhone": "string",
+  "userName": "string"
+}
+
+4️⃣ Get User Visible Orders
+
+API: GET /api/orders/my-orders
+
+Description:
+Lấy danh sách đơn hàng hợp lệ của người dùng.
+
+Logic hợp lệ:
+
+COD: Cho phép các trạng thái (PROCESSING, SHIPPING, DELIVERED, RETURNED)
+
+Stripe: Chỉ lấy đơn đã thanh toán thành công (PAID)
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+Response – Success (200):
+
+[
+  {
+    "_id": "orderId",
+    "sumPrice": 2000000,
+    "statusOrder": "SHIPPING",
+    "payment": {
+      "method": "COD",
+      "status": "PENDING"
+    }
+  }
+]
+
+5️⃣ Get User Cancelled Orders
+
+API: GET /api/orders/cancelled
+
+Description:
+Lấy danh sách đơn hàng đã bị hủy của người dùng.
+
+6️⃣ Get User Returned Orders
+
+API: GET /api/orders/returned
+
+Description:
+Lấy danh sách đơn hàng đã hoàn trả của người dùng.
+
+7️⃣ Get User Delivered Orders
+
+API: GET /api/orders/delivered
+
+Description:
+Lấy danh sách đơn hàng đã giao thành công của người dùng.
+
+8️⃣ [ADMIN] Get All Valid Orders
+
+API: GET /api/admin/orders
+
+Description:
+Admin lấy danh sách đơn hàng hợp lệ, đã lọc bỏ đơn rác.
+
+Anti-Spam Rules:
+
+COD: Cho phép nhiều trạng thái
+
+Stripe: Chỉ lấy đơn PAID
+
+Query Parameters:
+
+page   : number
+limit  : number
+status : ORDERED | PROCESSING | SHIPPING | DELIVERED | RETURNED | CANCELLED
+search : orderId
+
+
+Response – Success (200):
+
+{
+  "orders": [
+    {
+      "_id": "orderId",
+      "sumPrice": 2500000,
+      "statusOrder": "PROCESSING",
+      "userId": {
+        "_id": "userId",
+        "email": "user@email.com",
+        "fullName": "Nguyen Van A",
+        "phone": "0123456789"
+      }
+    }
+  ],
+  "total": 120,
+  "currentPage": 1,
+  "totalPages": 12,
+  "itemsPerPage": 10
+}
+
+9️⃣ Get Orders By Payment Status
+
+API: GET /api/admin/orders/payment-status
+
+Description:
+Lọc đơn hàng theo trạng thái thanh toán (Admin).
+
+Query Parameters:
+
+paymentStatus : PAID | UNPAID | PENDING
+page          : number
+limit         : number
+search        : string
+
+
+Response – Success (200):
+
+{
+  "data": [
+    {
+      "_id": "orderId",
+      "sumPrice": 1500000,
+      "payment": {
+        "method": "STRIPE",
+        "status": "PAID"
+      }
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3
+  }
+}
+
+🔐 Transaction & Data Integrity
+
+Sử dụng MongoDB Transaction (Session)
+
+Đảm bảo:
+
+Không tạo đơn khi cart rỗng
+
+Không mất dữ liệu khi lỗi giữa chừng
+
+Cart chỉ bị xóa khi order tạo thành công
