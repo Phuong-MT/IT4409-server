@@ -1,0 +1,436 @@
+Wishlist API Description
+1️⃣ Add product to wishlist
+
+API: POST /api/wishlist
+
+Description:
+Thêm một sản phẩm vào danh sách yêu thích (wishlist) của người dùng hiện tại.
+
+Nếu người dùng chưa có wishlist, hệ thống sẽ tự động tạo mới.
+
+Nếu sản phẩm đã tồn tại trong wishlist, API sẽ trả về lỗi.
+
+Authentication:
+✔ Yêu cầu đăng nhập (JWT – req.user.id)
+
+Request Body:
+
+{
+  "productId": "string"
+}
+
+
+Response – Success (200):
+
+{
+  "message": "Product added to wishlist",
+  "data": {
+    "_id": "wishlistId",
+    "userId": "userId",
+    "items": [
+      {
+        "productId": {
+          "_id": "productId",
+          "title": "Product title",
+          "brand": "Brand name",
+          "description": "Product description",
+          "images": []
+        },
+        "addedAt": "2026-01-13T10:00:00.000Z"
+      }
+    ]
+  }
+}
+
+
+Response – Error:
+
+404 – Product not found
+
+400 – Product already in wishlist
+
+500 – Server error
+
+2️⃣ Get wishlist
+
+API: GET /api/wishlist
+
+Description:
+Lấy danh sách sản phẩm trong wishlist của người dùng.
+
+Mỗi sản phẩm trả về ảnh và giá của variant đầu tiên.
+
+Tự động loại bỏ sản phẩm đã bị xóa khỏi hệ thống.
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+Response – Success (200):
+
+{
+  "success": true,
+  "data": [
+    {
+      "wishlistItemId": "itemId",
+      "productId": "productId",
+      "title": "Product title",
+      "brand": "Brand name",
+      "image": "image_url",
+      "price": 199000,
+      "addedAt": "2026-01-13T10:00:00.000Z"
+    }
+  ]
+}
+
+
+Response – Empty Wishlist (200):
+
+{
+  "success": true,
+  "data": []
+}
+
+
+Response – Error:
+
+500 – Failed to fetch wishlist
+
+3️⃣ Check product in wishlist
+
+API: GET /api/wishlist/check/:productId
+
+Description:
+Kiểm tra xem một sản phẩm có tồn tại trong wishlist của người dùng hay không.
+API này thường được dùng để:
+
+Hiển thị trạng thái “❤️ Đã yêu thích”
+
+Disable nút thêm wishlist ở frontend
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+URL Params:
+
+productId: string
+
+
+Response – Success (200):
+
+{
+  "exists": true
+}
+
+4️⃣ Remove product from wishlist
+
+API: DELETE /api/wishlist/:productId
+
+Description:
+Xóa một sản phẩm khỏi wishlist của người dùng bằng $pull trong MongoDB.
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+URL Params:
+
+productId: string
+
+
+Response – Success (200):
+
+{
+  "message": "Product removed from wishlist successfully"
+}
+
+
+Response – Error:
+
+400 – Invalid Product ID
+
+404 – Product not found in wishlist
+
+500 – Server error
+
+5️⃣ Clear wishlist
+
+API: DELETE /api/wishlist
+
+Description:
+Xóa toàn bộ sản phẩm trong wishlist của người dùng (làm rỗng mảng items).
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+Response – Success (200):
+
+{
+  "message": "Wishlist cleared successfully",
+  "data": []
+}
+
+
+Response – Error:
+
+404 – Wishlist not found
+
+500 – Server error
+
+🔒 Notes & Constraints
+
+Mỗi người dùng chỉ có một wishlist duy nhất.
+
+Mỗi sản phẩm chỉ được thêm một lần vào wishlist.
+
+Dữ liệu sản phẩm được lấy thông qua populate từ ProductModel.
+
+Giá và ảnh hiển thị dựa trên variant đầu tiên của sản phẩm.
+
+
+
+
+
+
+Product API Description
+1️⃣ Add Product
+
+API: POST /api/products
+
+Description:
+Tạo mới một sản phẩm trong hệ thống.
+
+Kiểm tra categoryId có tồn tại hay không
+
+Lưu sản phẩm kèm variants
+
+Xóa cache danh sách sản phẩm
+
+Gửi notification cho người tạo sản phẩm
+
+Authentication:
+✔ Yêu cầu đăng nhập (JWT)
+
+Request Body:
+
+{
+  "title": "string",
+  "brand": "string",
+  "description": "string",
+  "descriptionDetail": "string",
+  "specifications": {},
+  "variants": [],
+  "categoryId": "string",
+  "isHide": 0,
+  "rating": 5
+}
+
+
+Response – Success (201):
+
+{
+  "success": true,
+  "message": "Add product successfully",
+  "data": {
+    "_id": "productId",
+    "title": "Product title",
+    "brand": "Brand name",
+    "categoryId": "categoryId",
+    "variants": []
+  }
+}
+
+
+Response – Error:
+
+400 – Category does not exist
+
+409 – SKU already exists in another product variant
+
+500 – Internal Server Error
+
+2️⃣ Get All Products
+
+API: GET /api/products
+
+Description:
+Lấy danh sách sản phẩm công khai (isHide = PUBLIC) kèm phân trang, lọc và sắp xếp.
+
+Hỗ trợ cache Redis
+
+Lọc theo category
+
+Lọc theo khoảng giá
+
+Sắp xếp theo giá tăng / giảm
+
+Query Parameters:
+
+page       : number (optional)
+sort       : PRICE_ASC | PRICE_DESC (optional)
+idCategory : string (optional)
+minPrice  : number (optional)
+maxPrice  : number (optional)
+
+
+Response – Success (200):
+
+{
+  "data": [
+    {
+      "_id": "productId",
+      "title": "Product title",
+      "salePricePre": 199000
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 20,
+    "total": 100,
+    "totalPages": 5
+  }
+}
+
+
+Response – Error:
+
+400 – Invalid page number / Invalid category id
+
+500 – Failed to fetch products
+
+3️⃣ Get Product By ID
+
+API: GET /api/products/:id
+
+Description:
+Lấy chi tiết một sản phẩm theo ID.
+
+Chỉ trả về sản phẩm ở trạng thái PUBLIC
+
+URL Params:
+
+id: string
+
+
+Response – Success (200):
+
+{
+  "_id": "productId",
+  "title": "Product title",
+  "brand": "Brand name",
+  "variants": []
+}
+
+
+Response – Error:
+
+400 – Invalid product id
+
+404 – Product not found
+
+500 – Failed to fetch product
+
+4️⃣ Update Product
+
+API: PUT /api/products/:id
+
+Description:
+Cập nhật thông tin sản phẩm.
+
+Cho phép update linh hoạt các trường
+
+Xóa cache Redis sau khi cập nhật
+
+Gửi notification cập nhật sản phẩm
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+URL Params:
+
+id: string
+
+
+Request Body:
+(Toàn bộ các field cần cập nhật)
+
+Response – Success (200):
+
+{
+  "_id": "productId",
+  "title": "Updated product title",
+  "brand": "Updated brand"
+}
+
+
+Response – Error:
+
+400 – Invalid product id
+
+404 – Product not found
+
+500 – Failed to update product
+
+5️⃣ Change Product Status
+
+API: PATCH /api/products/:id/status
+
+Description:
+Thay đổi trạng thái hiển thị của sản phẩm.
+Các trạng thái hợp lệ:
+
+CREATE
+
+PUBLIC
+
+HIDE
+
+Sau khi cập nhật:
+
+Xóa cache Redis
+
+Gửi notification
+
+Authentication:
+✔ Yêu cầu đăng nhập
+
+URL Params:
+
+id: string
+
+
+Request Body:
+
+{
+  "to": 1
+}
+
+
+Response – Success (200):
+
+{
+  "message": "Change status to PUBLIC successfully"
+}
+
+
+Response – Error:
+
+400 – Invalid product id / Invalid status value
+
+404 – Product not found
+
+500 – Failed to change status
+
+🔒 Notes & Design Decisions
+
+Chỉ sản phẩm ở trạng thái PUBLIC mới được hiển thị cho người dùng
+
+Redis cache giúp tối ưu truy vấn danh sách sản phẩm
+
+Cache được xóa mỗi khi:
+
+Thêm sản phẩm
+
+Cập nhật sản phẩm
+
+Thay đổi trạng thái sản phẩm
+
+Notification được gửi cho các hành động quản trị sản phẩm
