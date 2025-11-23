@@ -6,6 +6,7 @@ firebase.json
 public/
 /yarn-error.log
 .env*
+!.env.example
 /data
 /data-crawler
 .DS_Store
