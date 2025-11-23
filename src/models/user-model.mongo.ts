@@ -21,7 +21,7 @@ const userSchema = new Schema<UserModelDocument>(
         email: { type: String, required: true, unique: true },
         phoneNumber: { type: String, required: true },
         address: { type: [String], default: [] },
-        dateOfBirth: { type: Date },
+        dateOfBirth: { type: Number },
         verifyCode: { type: String },
     },
     { versionKey: false, timestamps: true }
