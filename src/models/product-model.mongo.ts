@@ -19,6 +19,8 @@ const productSchema = new Schema<ProductModelDocument>(
         title: { type: String, required: true },
         description: { type: String, required: true },
         descriptionDetail: { type: String, required: true },
+        version: { type: String, required: true },
+        color: { type: String, required: true },
         price: { type: Number, required: true },
         quantity: { type: Number, required: true },
         categoryId: {
