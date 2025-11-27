@@ -6,14 +6,14 @@ import ProductModel from '../models/product-model.mongo';
 export const createProduct = async (req: any, res: any) => {
     try {
         const producData = req.body;
-        const {name, description, price, categoryId, stock} = producData;
+        const {title, brand, description, specifications, categoryId} = producData;
 
-        const existingProduct = await ProductModel.findOne({ name });
+        const existingProduct = await ProductModel.findOne({ title });
         if (existingProduct) {
             return res.status(400).json({ message: 'Product with this name already exists' });
         }
         
-        const newProduct = new Product({ name, description, price, categoryId, stock });
+        const newProduct = new Product({ title, brand, description, specifications, categoryId   });
         const savedProduct = await ProductModel.create(newProduct);
         res.status(201).json(savedProduct);
     } catch (error) {
@@ -21,6 +21,7 @@ export const createProduct = async (req: any, res: any) => {
     }
 
 }
+
 
 
 

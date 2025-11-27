@@ -17,12 +17,9 @@ export interface IProductModel extends Model<ProductModelDocument> {}
 const productSchema = new Schema<ProductModelDocument>(
     {
         title: { type: String, required: true },
-        description: { type: String, required: true },
-        descriptionDetail: { type: String, required: true },
-        version: { type: String, required: true },
-        color: { type: String, required: true },
-        price: { type: Number, required: true },
-        quantity: { type: Number, required: true },
+        brand: { type: String, required: true },
+        description: { type: String, required: true },  
+        specifications: { type: [{ key: String, value: String }], required: false },
         categoryId: {
             type: ObjectId as any,
             ref: categoryTableName,
@@ -33,7 +30,6 @@ const productSchema = new Schema<ProductModelDocument>(
             required: false,
             default: STATUS_EVALUATION.CREATE,
         },
-        imageUrl: { type: [String], required: false },
     },
     { versionKey: false, timestamps: true }
 );
