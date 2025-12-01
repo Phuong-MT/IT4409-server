@@ -5,14 +5,17 @@ import CategoryModel from '../models/category-model.mongo';
 export const createCategory = async (req: any, res: any) => {
     try {
         const categoryData = req.body;
-        const {name, description} = categoryData;
+        const {name, description, icon_url} = categoryData;
         
         const existingCategory = await CategoryModel.findOne({ name });
         if (existingCategory) {
             return res.status(400).json({ message: 'Category with this name already exists' });
         }
-        const newCategory = new Category({ name, description });
-        const savedCategory = await CategoryModel.create(newCategory);
+        const savedCategory = await CategoryModel.create({
+            name: name,
+            description: description,
+            icon_url: icon_url
+        });
         res.status(201).json(savedCategory);
     } catch (error) {
         res.status(500).json({ message: 'Failed to create category', error });       

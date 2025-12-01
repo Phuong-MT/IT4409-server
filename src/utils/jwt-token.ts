@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 export const jwtDecodeToken = function (token: string): string | object | null {
-    const jwtSecret = process.env.JWT_SECRET || "jwtSecretV1";
+    const jwtSecret = process.env.ACCESS_TOKEN_SECRET || "jwtSecretV1";
     try {
         let decoded = jwt.verify(token, jwtSecret);
         if (decoded && typeof decoded === "object") {

@@ -75,7 +75,7 @@ export const login = async (req: any, res: any) => {
         }
         // Generate token (pseudo code)
         const accessToken = jwt.sign(
-            {userID: user._id}, 
+            {userID: user._id, userRole: user.role},
             TOKEN_SECRET, 
             {expiresIn: ACCESS_TOKEN_TTL}
         );// Replace with actual token generation logic
@@ -121,7 +121,7 @@ export const refreshToken = async (req: any, res: any) => {
             return res.status(401).json({ message: "User not found" });
         }
         const newAccessToken = jwt.sign(
-            {userID: user._id}, 
+            {userID: user._id, userRole: user.role}, 
             TOKEN_SECRET, 
             {expiresIn: ACCESS_TOKEN_TTL}
         );
