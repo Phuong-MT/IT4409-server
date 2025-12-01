@@ -6,6 +6,7 @@ import helmet from "helmet";
 import { AddressInfo } from "net";
 import AuthRouter from "./routes/auth.router";
 import connectDatabase from "./utils/connectDB";
+import ProductRouter from "./routes/product.router";
 
 const dotenv = require("dotenv");
 const result = dotenv.config();
@@ -36,6 +37,7 @@ app.set("trust proxy", true);
 
 try {
     app.use("/api", AuthRouter);
+    app.use("/api",ProductRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
