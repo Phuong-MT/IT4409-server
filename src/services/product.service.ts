@@ -3,29 +3,41 @@ import { Product } from '../shared/models/product-model';
 import ProductModel from '../models/product-model.mongo';
 
 
-export const createProduct = async (req: any, res: any) => {
+export const addProduct = async (req: any, res: any) => {
     try {
-        const producData = req.body;
-        const {title, brand, description, specifications, categoryId} = producData;
+        const { title, description, descriptionDetail, price, quantity, categoryId, imageUrl, isHide } = req.body;
 
-        // const existingProduct = await ProductModel.findOne({ title });
-        // if (existingProduct) {
-        //     return res.status(400).json({ message: 'Product with this name already exists' });
+        // if (!title || !description || !price || !quantity || !categoryId) {
+        //     return res.status(400).json({
+        //         success: false,
+        //         message: "Vui lòng nhập đầy đủ thông tin (title, description, price, quantity, categoryId)"
+        //     });
         // }
-        
-        const savedProduct = await ProductModel.create({
-            title: title,
-            brand: brand,
-            description: description,
-            specifications: specifications,
-            categoryId: categoryId
+
+        // 3. Tạo một instance mới của ProductModel
+        const newProduct = new ProductModel({
+            title,description,descriptionDetail,price,quantity,categoryId, imageUrl,isHide 
         });
-        res.status(201).json(savedProduct);
-    } catch (error) {
-        res.status(500).json({ message: 'Failed to create product', error });       
+
+        // 4. Lưu vào database
+        const savedProduct = await newProduct.save();
+
+        return res.status(201).json({
+            success: true,
+            message: "Thêm sản phẩm thành công",
+            data: savedProduct
+        });
+
+    } catch (error: any) {
+        console.error("Error adding product:", error);
+
+        return res.status(500).json({
+            success: false,
+            message: "Lỗi Server nội bộ",
+            error: error.message
+        });
     }
 }
-
 export const getAllProducts = async (req: any, res: any) => {
     try {
         const products = await ProductModel.find();
@@ -74,6 +86,8 @@ export const deleteProduct = async (req: any, res: any) => {
         res.status(500).json({ message: 'Failed to delete product', error });
     }
 }
+
+
 
 
 
