@@ -17,9 +17,9 @@ export interface IProductModel extends Model<ProductModelDocument> {}
 const productSchema = new Schema<ProductModelDocument>(
     {
         title: { type: String, required: true },
-        brand: { type: String, required: true },
+        // brand: { type: String, required: true },
         description: { type: String, required: true },  
-        specifications: { type: [{ key: String, value: String }], required: false },
+        // specifications: { type: [{ key: String, value: String }], required: false, _id: false },
         categoryId: {
             type: ObjectId as any,
             ref: categoryTableName,
