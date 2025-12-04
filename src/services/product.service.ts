@@ -5,18 +5,17 @@ import ProductModel from '../models/product-model.mongo';
 
 export const addProduct = async (req: any, res: any) => {
     try {
-        const { title, description, descriptionDetail, price, quantity, categoryId, imageUrl, isHide } = req.body;
-
-        // if (!title || !description || !price || !quantity || !categoryId) {
-        //     return res.status(400).json({
-        //         success: false,
-        //         message: "Vui lòng nhập đầy đủ thông tin (title, description, price, quantity, categoryId)"
-        //     });
-        // }
+        const {title, brand, description, specifications, categoryId,isHide, variants } = req.body;
 
         // 3. Tạo một instance mới của ProductModel
         const newProduct = new ProductModel({
-            title,description,descriptionDetail,price,quantity,categoryId, imageUrl,isHide 
+            title,
+            brand,
+            description,
+            specifications,
+            categoryId,
+            isHide,
+            variants
         });
 
         // 4. Lưu vào database
@@ -24,13 +23,11 @@ export const addProduct = async (req: any, res: any) => {
 
         return res.status(201).json({
             success: true,
-            message: "Thêm sản phẩm thành công",
+            message: "Add product successfully",
             data: savedProduct
         });
 
     } catch (error: any) {
-        console.error("Error adding product:", error);
-
         return res.status(500).json({
             success: false,
             message: "Lỗi Server nội bộ",

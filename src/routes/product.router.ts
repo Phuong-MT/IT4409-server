@@ -12,7 +12,7 @@ ProductRouter.put("/products/:id", auth, verifyRole("USER"), updateProduct);
 ProductRouter.delete("/products/:id", auth, verifyRole("USER"), deleteProduct);
 ProductRouter.get("/products/:id", getProductById);
 
-ProductRouter.post("/product",auth,validate(productSchema), addProduct);
+ProductRouter.post("/products", addProduct);
 
 
 
