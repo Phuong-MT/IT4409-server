@@ -1,3 +1,4 @@
+import "dotenv/config";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
@@ -5,10 +6,10 @@ import express from "express";
 import helmet from "helmet";
 import { AddressInfo } from "net";
 import AuthRouter from "./routes/auth.router";
+import CategoryRouter from "./routes/category.router";
+import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 
-const dotenv = require("dotenv");
-const result = dotenv.config();
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -36,6 +37,8 @@ app.set("trust proxy", true);
 
 try {
     app.use("/api", AuthRouter);
+    app.use("/api", CategoryRouter);
+    app.use("/api", ProductRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
