@@ -8,7 +8,7 @@ import SessionModel from '../models/session-model.mongo';
 const dotenv = require("dotenv");
 const result = dotenv.config();
 const ACCESS_TOKEN_TTL = '15m'; 
-const TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'your-default-secret';
+const TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "jwtSecretV1";
 const REFRESH_TOKEN_TTL = 14 * 24 * 60 * 60 * 1000; // 14 days in milliseconds
 
 export const register = async (req: any, res: any) => {
@@ -75,7 +75,7 @@ export const login = async (req: any, res: any) => {
         }
         // Generate token (pseudo code)
         const accessToken = jwt.sign(
-            {userID: user._id}, 
+            {userID: user._id, userRole: user.role},
             TOKEN_SECRET, 
             {expiresIn: ACCESS_TOKEN_TTL}
         );// Replace with actual token generation logic
@@ -94,6 +94,12 @@ export const login = async (req: any, res: any) => {
             secure: false, // Chỉ gửi cookie qua HTTPS trong môi trường production
             sameSite: 'none', // deploy backend va frontend khac domain
             maxAge: REFRESH_TOKEN_TTL,
+        });
+        res.cookie('access_token', accessToken, {
+            httpOnly: true,
+            secure: false, // false nếu chạy localhost
+            sameSite: 'none',
+            maxAge: 120 * 60 * 1000, // Thời gian sống ngắn (ví dụ 2h) theo ACCESS_TOKEN_TTL
         });
         return res.status(200).json({ message: "Login successful", accessToken: accessToken }); 
 
@@ -121,7 +127,7 @@ export const refreshToken = async (req: any, res: any) => {
             return res.status(401).json({ message: "User not found" });
         }
         const newAccessToken = jwt.sign(
-            {userID: user._id}, 
+            {userID: user._id, userRole: user.role}, 
             TOKEN_SECRET, 
             {expiresIn: ACCESS_TOKEN_TTL}
         );

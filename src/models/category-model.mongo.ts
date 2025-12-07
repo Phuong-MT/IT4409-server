@@ -12,6 +12,8 @@ export interface ICategoryModel extends Model<CategoryModelDocument> {}
 const categorySchema = new Schema<CategoryModelDocument>(
     {
         name: { type: String, required: true },
+        description: { type: String, required: true },
+        icon_url: { type: String  },
     },
     { versionKey: false, timestamps: true }
 );
