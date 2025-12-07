@@ -1,9 +1,11 @@
 import jwt from "jsonwebtoken";
+const dotenv = require("dotenv");
+const result = dotenv.config();
+const TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || "your-default-secret";
 
 export const jwtDecodeToken = function (token: string): string | object | null {
-    const jwtSecret = process.env.ACCESS_TOKEN_SECRET || "jwtSecretV1";
     try {
-        let decoded = jwt.verify(token, jwtSecret);
+        let decoded = jwt.verify(token, TOKEN_SECRET);
         if (decoded && typeof decoded === "object") {
             return decoded;
         }
@@ -18,4 +20,11 @@ export const jwtDecodeToken = function (token: string): string | object | null {
         }
     }
     return null;
+};
+
+export const jwtSignToken = (payload: any, expiresIn: number) => {
+    const accessToken = jwt.sign(payload, TOKEN_SECRET, {
+        expiresIn,
+    });
+    return accessToken;
 };
