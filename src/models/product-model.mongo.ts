@@ -9,8 +9,8 @@ const ObjectId = Schema.Types.ObjectId;
 export const productTableName = "Product";
 
 export interface ISpecItem {
-  key: string; 
-  value: string; 
+    key: string;
+    value: string;
 }
 export interface IColorVariant {
     colorName: string;
@@ -18,13 +18,16 @@ export interface IColorVariant {
     images: string[];
     quantity: number;
 }
-const colorVariantSchema = new Schema<IColorVariant>({
-    colorName: { type: String, required: true },
-    hexcode: { type: String, required: true },
-    images: [{ type: String }],
-    quantity: { type: Number, default: 0 }
-}, { _id: false });
-export interface IProductVariant{
+const colorVariantSchema = new Schema<IColorVariant>(
+    {
+        colorName: { type: String, required: true },
+        hexcode: { type: String, required: true },
+        images: [{ type: String }],
+        quantity: { type: Number, default: 0 },
+    },
+    { _id: false }
+);
+export interface IProductVariant {
     version: string;
     price: number;
     sku: string;
@@ -35,24 +38,28 @@ const productVariantSchema = new Schema<IProductVariant>({
     version: { type: String, required: true },
     price: { type: Number, required: true },
     sku: { type: String },
-    options: [colorVariantSchema]
-})
+    options: [colorVariantSchema],
+});
 export interface ProductModelDocument extends IProduct, Document {
     _id: any;
     brand: string;
-    specifications?: ISpecItem[]
-    variants: IProductVariant[]
+    specifications?: ISpecItem[];
+    variants: IProductVariant[];
 }
 
 export interface IProductModel extends Model<ProductModelDocument> {}
-
 
 const productSchema = new Schema<ProductModelDocument>(
     {
         title: { type: String, required: true },
         brand: { type: String, required: true },
         description: { type: String, required: true },
-        specifications: { type: [{ key: String, value: String }], required: false, default: [], _id: false },
+        specifications: {
+            type: [{ key: String, value: String }],
+            required: false,
+            default: [],
+            _id: false,
+        },
 
         categoryId: {
             type: ObjectId as any,
@@ -65,9 +72,9 @@ const productSchema = new Schema<ProductModelDocument>(
             default: STATUS_EVALUATION.CREATE,
         },
         variants: {
-            type: [productVariantSchema], 
-            default: []
-        }
+            type: [productVariantSchema],
+            default: [],
+        },
     },
     { versionKey: false, timestamps: true }
 );
