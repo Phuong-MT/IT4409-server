@@ -1,0 +1,27 @@
+import { Document, Model, model, Schema } from "mongoose";
+import { ICart } from "../shared/models/cart-model";
+import { userTableName } from "./user-model.mongo";
+import { productTableName } from "./product-model.mongo";
+
+export const cartTableName = "Cart";
+
+export interface CartModelDocument extends ICart, Document {
+    _id: any;
+}
+
+export interface ICartModel extends Model<CartModelDocument> {}
+
+const cartSchema = new Schema<CartModelDocument>(
+    {
+        userId: { type: String, required: true, ref: userTableName },
+        productId: { type: String, required: true, ref: productTableName },
+        quantity: { type: Number, required: true },
+    },
+    { timestamps: true, versionKey: false }
+);
+const CartModel = model<CartModelDocument, ICartModel>(
+    cartTableName,
+    cartSchema
+);
+
+export default CartModel;
