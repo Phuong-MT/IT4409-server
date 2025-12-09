@@ -115,5 +115,39 @@ export const productSchema = yup
       .max(5, "Rating must be <= 5")
       .optional(),
   })
-  .noUnknown(true)
   .required();
+
+  export const updateProductSchema = yup.object({
+    title: yup.string().trim().max(255), // Đã bỏ .required()
+    
+    brand: yup.string().trim(), // Đã bỏ .required()
+    
+    description: yup.string().trim(),
+    
+    descriptionDetail: yup.string().trim(),
+
+    // Tận dụng lại schema cũ, không cần viết lại logic bên trong
+    specifications: yup.array().of(specItemSchema).default(undefined), 
+
+    // Khi update variants: Thường là gửi cả mảng variants mới đè lên mảng cũ
+    variants: yup
+      .array()
+      .of(productVariantSchema)
+      .min(1, "If updating variants, must have at least 1")
+      .default(undefined), // Để undefined để nếu ko gửi thì ko update
+
+    categoryId: yup
+      .string()
+      .trim()
+      .matches(objectIdRegex, "Invalid Category ID format"),
+
+    isHide: yup
+      .number()
+      .oneOf(validStatus as any, "Invalid evaluation status"),
+
+    rating: yup
+      .number()
+      .nullable()
+      .min(1).max(5)
+      .transform((v, orig) => (orig === "" ? null : v)),
+});

@@ -36,9 +36,8 @@ const productVariantSchema = new Schema<IProductVariant>({
     quantity: { type: Number, default: 0 },
     price: { type: Number, required: true },
     salePrice: { type: Number },
-    sku: { type: String },
-    
-})
+    sku: { type: String, required: true, unique: true },
+});
 export interface ProductModelDocument extends IProduct, Document {
     _id: any;
 }

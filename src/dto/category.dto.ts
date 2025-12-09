@@ -8,4 +8,4 @@ export const categorySchema = yup.object({
     .min(1, "Name is required")
     .max(200, "Name must be at most 200 characters")
     .required("Name is required"),
-}).noUnknown(true).required();
+}).required();
