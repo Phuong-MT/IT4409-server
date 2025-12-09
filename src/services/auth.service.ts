@@ -39,6 +39,7 @@ export const register = async (req: any, res: any) => {
 };
 
 export const login = async (req: any, res: any) => {
+    
     const cookieOptions = {
         httpOnly: true,
         secure: process.env.COOKIE_SECURE === "true", // true in prod
@@ -67,7 +68,7 @@ export const login = async (req: any, res: any) => {
         }
 
         const userSam = {
-            id: bcrypt.randomUUID(),
+            // id: bcrypt.randomUUID(),
             role: user.role,
             email: user.email,
         };

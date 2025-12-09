@@ -10,7 +10,8 @@ export const validate = (schema: Schema) => async (
     next: NextFunction
 ) => {
     try {
-        await schema.validate(req.body, { abortEarly: false });
+        const validated = await schema.validate(req.body, { abortEarly: false , stripUnknown: true });
+        req.body = validated;
         // Nếu validation thành công,gọi next() để chuyển cho login service xử lý
         next();
     } catch (error: any) {
