@@ -1,13 +1,10 @@
 import { getRedisClient } from "./redisClient";
 
-export async function setValue(key: string, value: string | number, ttl?: number) {
+const DEFAULT_TTL = 3600;
+
+export async function setValue(key: string, value: string | number, ttl: number = DEFAULT_TTL) {
     const client = await getRedisClient();
-
-    if (ttl) {
         return client.set(key, value.toString(), { EX: ttl });
-    }
-
-    return client.set(key, value.toString());
 }
 
 export async function getValue(key: string) {
@@ -16,11 +13,11 @@ export async function getValue(key: string) {
 }
 
 /* ============ OBJECT ============ */
-export async function setObject<T>(key: string, value: T, ttl?: number) {
+export async function setObject<T>(key: string, value: T, ttl: number = DEFAULT_TTL) {
     const client = await getRedisClient();
     const jsonString = JSON.stringify(value);
     
-    return client.set(key, jsonString, ttl ? { EX: ttl } : undefined);
+    return client.set(key, jsonString,  { EX: ttl });
 }
 
 export async function getObject<T>(key: string): Promise<T | null> {
@@ -37,9 +34,9 @@ export async function getObject<T>(key: string): Promise<T | null> {
 
 /* ============ ARRAY ============ */
 
-export async function setArray<T>(key: string, arr: T[], ttl?: number) {
+export async function setArray<T>(key: string, arr: T[], ttl: number = DEFAULT_TTL) {
     const client = await getRedisClient();
-    return client.set(key, JSON.stringify(arr), ttl ? { EX: ttl } : undefined);
+    return client.set(key, JSON.stringify(arr),  { EX: ttl });
 }
 
 export async function getArray<T>(key: string): Promise<T[] | null> {
