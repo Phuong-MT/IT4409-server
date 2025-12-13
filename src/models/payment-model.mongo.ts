@@ -6,6 +6,7 @@ import { orderTableName } from "./order-model.mongo";
 
 const PAYMENT_METHOD = Contacts.PaymentMethod;
 const DELIVERY = Contacts.Delivery;
+const STATUS_PAYMENT = Contacts.Status.Payment;
 
 export const paymentTableName = "Payment";
 export interface PaymentDocument extends IPayment, Document {
@@ -25,6 +26,7 @@ const paymentSchema = new Schema<PaymentDocument>(
             type: Schema.Types.ObjectId as any,
             required: true,
             ref: orderTableName,
+            unique: true,
         },
         method: {
             type: String,
@@ -37,6 +39,12 @@ const paymentSchema = new Schema<PaymentDocument>(
             type: String,
             enum: Object.values(DELIVERY),
             required: true,
+        },
+        status: {
+            type: Number,
+            enum: Object.values(STATUS_PAYMENT),
+            required: true,
+            default: STATUS_PAYMENT.UNPAID,
         },
     },
     { timestamps: true, versionKey: false }

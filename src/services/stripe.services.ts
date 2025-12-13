@@ -9,7 +9,11 @@ class StripeService {
         this.stripe = new Stripe(secretKey);
     }
 
-    async createCheckoutSession(line_items: any, currency: string = "usd") {
+    async createCheckoutSession(
+        line_items: any,
+        success_url: string,
+        cancel_url: string
+    ) {
         return this.stripe.checkout.sessions.create({
             mode: "payment",
             payment_method_types: ["card"],
@@ -19,8 +23,8 @@ class StripeService {
                     message: `Thanh toán bởi ${this.config.title}`,
                 },
             },
-            success_url: `http://localhost:4000/payment/success`,
-            cancel_url: `http://locahost:4000/payment/cancel`,
+            success_url,
+            cancel_url,
         });
     }
 }

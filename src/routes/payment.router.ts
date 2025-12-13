@@ -1,16 +1,24 @@
 import express from "express";
 import Stripe from "stripe";
-import { stripeService } from "../services/stripe.services";
-import OrderModel from "../models/order-model.mongo";
 import { Contacts } from "../shared/contacts";
-import mongoose from "mongoose";
-import { productTableName } from "../models/product-model.mongo";
+import { auth } from "../middlewares/auth";
+import { decryptObject, encryptObject } from "../utils";
+import { orderServices } from "../services/order.service";
+import {
+    ISignatureTranscript,
+    paymentService,
+} from "../services/paymeny.service";
+
+const PAYMENT_METHOD = Contacts.PaymentMethod;
+const DELIVERY = Contacts.Delivery;
+const STATUS_PAYMENT = Contacts.Status.Payment;
 
 const PaymentRouter = express.Router();
 
-PaymentRouter.post("/payment/creator", async (req, res) => {
+PaymentRouter.post("/payment/creator", auth, async (req, res) => {
     try {
-        const method = req.query["method"];
+        const method = String(req.query["method"] ?? "");
+        const delivery = String(req.query["delivery"] ?? "");
         const orderId = String(req.query.order ?? "");
         if (!orderId) {
             return res.status(400).json("order_id is required");
@@ -19,97 +27,44 @@ PaymentRouter.post("/payment/creator", async (req, res) => {
             return res.status(400).json("method is required");
         }
 
-        const agg = [
-            { $match: { _id: new mongoose.Types.ObjectId(orderId) } },
-            {
-                $lookup: {
-                    from: productTableName.toLowerCase() + "s",
-                    localField: "listProduct.productId",
-                    foreignField: "_id",
-                    as: "productInfo",
-                },
-            },
-            {
-                $addFields: {
-                    listProduct: {
-                        $map: {
-                            input: "$listProduct",
-                            as: "item",
-                            in: {
-                                $mergeObjects: [
-                                    "$$item",
-                                    {
-                                        productDetail: {
-                                            $arrayElemAt: [
-                                                {
-                                                    $filter: {
-                                                        input: "$productInfo",
-                                                        as: "p",
-                                                        cond: {
-                                                            $eq: [
-                                                                "$$p._id",
-                                                                "$$item.productId",
-                                                            ],
-                                                        },
-                                                    },
-                                                },
-                                                0,
-                                            ],
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    },
-                },
-            },
-
-            { $project: { productInfo: 0 } },
-        ];
-        const orderRes = await OrderModel.aggregate(agg);
-        if (!orderRes || orderRes[0].listProduct.length === 0) {
+        const orderRes = await orderServices.orderInfoWidthListProductDetail(
+            orderId
+        );
+        if (orderRes.length <= 0 || orderRes[0].listProduct.length === 0) {
             return res.status(400).json("Order not found");
         }
 
-        const totleMemony = orderRes[0].sumPrice;
+        const totalMoney = orderRes[0].sumPrice;
         const listProduct = orderRes[0].listProduct;
-
-        let urlRedric = "";
-        switch (method) {
-            case "stripe":
-                const lineItem = listProduct.map((e) => {
-                    return {
-                        price_data: {
-                            currency: "usd",
-                            product_data: {
-                                name: e.title,
-                                description: e.description,
-                                // images: [
-                                //     "https://storage.googleapis.com/worksheetzone/test-upload/621446303dbe963974acb3e5/my-word-search-title-w1000-h1291-preview-0.png",
-                                // ],
-                            },
-                            unit_amount: e.price - e.discount,
-                        },
-                        quantity: e.quantity,
-                    };
-                });
-                const stripeMethod = await stripeService.createCheckoutSession(
-                    lineItem
-                );
-                urlRedric = stripeMethod.url;
-                break;
-            default:
-                break;
-        }
-        //update status order
-        await OrderModel.findByIdAndUpdate(
-            new mongoose.Types.ObjectId(orderId),
-            {
-                statusOrder: Contacts.Status.Order.PROCESSING,
-            }
+        const totalDiscount = listProduct.reduce(
+            (sum, item) => sum + (item.discount ?? 0),
+            0
         );
 
-        return res.redirect(303, urlRedric);
+        const urlRedirect = await paymentService.paymentTransctip(
+            method,
+            orderRes[0]
+        );
+
+        await Promise.all([
+            paymentService.CreatePayment({
+                _id: "",
+                userId: (req as any).user.id,
+                orderId: orderRes[0]._id,
+                method: method ?? PAYMENT_METHOD.COD,
+                totalMoney,
+                discount: totalDiscount,
+                delivery: delivery || DELIVERY.EXPRESS,
+                status: STATUS_PAYMENT.UNPAID,
+            }),
+            orderServices.updateOrder(
+                { statusOrder: Contacts.Status.Order.PROCESSING },
+                orderId
+            ),
+        ]);
+
+        // return res.redirect(303, urlRedric);
+        return res.status(200).json(urlRedirect);
     } catch (err: any) {
         // stripe
         if (err instanceof Stripe.errors.StripeCardError) {
@@ -158,6 +113,37 @@ PaymentRouter.post("/payment/creator", async (req, res) => {
             error: err.message,
         });
     }
+});
+PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        if (!id) {
+            return res.status(400).json("Invalid error");
+        }
+
+        const data = decryptObject(id) as ISignatureTranscript;
+        const { orderId, orderType, status } = data;
+        if (!orderId || !orderType || !status) {
+            return res.status(400).json("Invalid error");
+        }
+
+        const statusPaymentCheckUpdate =
+            await paymentService.paymentCheckUpdate({
+                orderId,
+                orderType,
+                status,
+            });
+
+        return res.status(200).json(statusPaymentCheckUpdate);
+    } catch (err) {
+        console.log("error: ", err);
+        return res.status(500).json("Server error");
+    }
+});
+//momo-weeb-hook
+PaymentRouter.get("/payment/weeb-hook", (req, res) => {
+    console.log("req, ", req?.body);
+    return res.status(200).json("oke");
 });
 
 export default PaymentRouter;
