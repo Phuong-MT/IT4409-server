@@ -13,8 +13,16 @@ export interface ICartModel extends Model<CartModelDocument> {}
 
 const cartSchema = new Schema<CartModelDocument>(
     {
-        userId: { type: String, required: true, ref: userTableName },
-        productId: { type: String, required: true, ref: productTableName },
+        userId: {
+            type: Schema.Types.ObjectId as any,
+            required: true,
+            ref: userTableName,
+        },
+        productId: {
+            type: Schema.Types.ObjectId as any,
+            required: true,
+            ref: productTableName,
+        },
         quantity: { type: Number, required: true },
     },
     { timestamps: true, versionKey: false }

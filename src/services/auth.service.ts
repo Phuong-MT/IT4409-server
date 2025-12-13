@@ -1,7 +1,6 @@
 import UserModel from "../models/user-model.mongo";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import SessionModel from "../models/session-model.mongo";
 import { jwtSignToken } from "../utils/jwt-token";
 // 14 days in milliseconds
 
@@ -39,7 +38,6 @@ export const register = async (req: any, res: any) => {
 };
 
 export const login = async (req: any, res: any) => {
-    
     const cookieOptions = {
         httpOnly: true,
         secure: process.env.COOKIE_SECURE === "true", // true in prod
@@ -68,7 +66,7 @@ export const login = async (req: any, res: any) => {
         }
 
         const userSam = {
-            // id: bcrypt.randomUUID(),
+            id: crypto.randomUUID(),
             role: user.role,
             email: user.email,
         };

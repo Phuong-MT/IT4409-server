@@ -3,7 +3,6 @@ deploy.tar
 .firebase/
 .firebaserc
 firebase.json
-public/
 /yarn-error.log
 .env*
 !.env.example

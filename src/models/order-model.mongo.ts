@@ -14,7 +14,11 @@ export interface IOrderModel extends Model<OrderDocument> {}
 
 const productItemSchema = new Schema<IProductItem>(
     {
-        productId: { type: String, required: true, ref: productTableName },
+        productId: {
+            type: Schema.Types.ObjectId as any,
+            required: true,
+            ref: productTableName,
+        },
         title: { type: String, required: true },
         description: { type: String, required: true },
         price: { type: Number, required: true },
