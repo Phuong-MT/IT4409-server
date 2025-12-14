@@ -9,15 +9,18 @@ const ObjectId = Schema.Types.ObjectId;
 export const productTableName = "Product";
 
 export interface ISpecItem {
-  key: string; 
-  value: string; 
+    key: string;
+    value: string;
 }
-const specItemSchema = new Schema<ISpecItem>({
-    key: { type: String, required: true },
-    value: { type: String, required: true }
-}, { _id: false });
+const specItemSchema = new Schema<ISpecItem>(
+    {
+        key: { type: String, required: true },
+        value: { type: String, required: true },
+    },
+    { _id: false }
+);
 
-export interface IProductVariant{
+export interface IProductVariant {
     version: string;
     colorName: string;
     hexcode: string;
@@ -44,7 +47,6 @@ export interface ProductModelDocument extends IProduct, Document {
 
 export interface IProductModel extends Model<ProductModelDocument> {}
 
-
 const productSchema = new Schema<ProductModelDocument>(
     {
         title: { type: String, required: true },
@@ -53,11 +55,11 @@ const productSchema = new Schema<ProductModelDocument>(
         descriptionDetail: { type: String, required: true },
         specifications: {
             type: [specItemSchema],
-            default: []
+            default: [],
         },
         variants: {
-            type: [productVariantSchema], 
-            default: []
+            type: [productVariantSchema],
+            default: [],
         },
         categoryId: {
             type: ObjectId as any,
