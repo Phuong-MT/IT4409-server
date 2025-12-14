@@ -7,6 +7,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support import expected_conditions as EC
 
 class CellphoneSJsonCrawler:
     def __init__(self):
@@ -20,192 +21,225 @@ class CellphoneSJsonCrawler:
         )
         self.wait = WebDriverWait(self.driver, 10)
 
-    def get_clean_image_url(thumbnail_url):
-        """
-        Biến đổi link thumbnail thành link full HD.
-        Ví dụ: '.../insecure/rs:fill:58:58/q:90/plain/https://...' 
-        -> 'https://...'
-        """
+    def get_clean_image_url(self, thumbnail_url):
+        """Lấy link ảnh gốc từ thumbnail"""
         if not thumbnail_url:
             return ""
-        
-        # Logic: Link gốc thường nằm sau chữ "/plain/"
         if "/plain/" in thumbnail_url:
             return thumbnail_url.split("/plain/")[-1]
         return thumbnail_url
 
     def clean_price(self, price_str):
-        """Chuyển đổi '20.990.000₫' -> 20990000"""
-        if not price_str: return 0
+        """Chuyển đổi chuỗi tiền tệ thành số nguyên"""
+        if not price_str: 
+            return 0
         clean = re.sub(r'[^\d]', '', price_str)
         return int(clean) if clean else 0
 
     def parse_product_detail(self, link):
-        """
-        Vào trang chi tiết, lấy dữ liệu và map về đúng cấu trúc Schema
-        """
-        print(f"  -> Đang xử lý: {link}")
+        print(f"[*] Đang xử lý: {link}")
         self.driver.get(link)
-        time.sleep(2) # Chờ load
+        time.sleep(2)
 
         try:
-            # 1. Lấy thông tin cơ bản
+            # 1. Lấy thông tin cơ bản (Title)
             try:
-                title_element = self.driver.find_element(By.CSS_SELECTOR, ".box-product-name h1")
-                title = title_element.text.strip()
+                title = self.driver.find_element(By.CSS_SELECTOR, ".box-product-name h1").text.strip()
             except:
                 title = "Unknown Product"
 
-            # 2. Lấy giá (Sale & Gốc)
-            try:
-                # Class này có thể thay đổi tùy thời điểm, cần inspect lại nếu lỗi
-                sale_price_elem = self.driver.find_element(By.CSS_SELECTOR, ".box-product-price .sale-price")
-                sale_price = self.clean_price(sale_price_elem.text)
-            except:
-                sale_price = 0
-            
-            try:
-                price_elem = self.driver.find_element(By.CSS_SELECTOR, ".box-product-price .base-price")
-                price = self.clean_price(price_elem.text)
-            except:
-                price = sale_price # Nếu không có giá gốc thì lấy giá sale làm giá gốc
-
-            # 3. Lấy Specifications (Thông số kỹ thuật) -> Map vào [specItemSchema]
+            # 2. Lấy Specifications (Thông số kỹ thuật)
             specifications = []
             try:
                 text_box = self.driver.find_element(By.ID, "thong-so-ky-thuat")
                 rows = text_box.find_elements(By.CLASS_NAME, "technical-content-item")
 
-                print(f"[*] Tìm thấy {len(rows)} dòng thông số.")
-
-                # Lấy các dòng trong bảng thông số
                 for row in rows:
-        # Lấy toàn bộ text trong dòng. 
-        # Ví dụ kết quả sẽ là: "Kích thước màn hình\n6.7 inches" hoặc "Chipset: Apple A17"
                     row_text = row.text.strip()
-                    
-                    # 3. Tách Key và Value
-                    # Logic: Thông thường text sẽ ngăn cách bởi dấu xuống dòng (\n) hoặc dấu hai chấm (:)
                     if "\n" in row_text:
                         key, value = row_text.split("\n", 1)
                     elif ":" in row_text:
                         key, value = row_text.split(":", 1)
                     else:
-                        # Trường hợp lạ, ta tạm gán key là text, value rỗng để không mất dữ liệu
                         key = row_text
                         value = ""
 
-                    # Chỉ thêm vào nếu có dữ liệu
                     if key:
-                        spec_item = {
+                        specifications.append({
                             "key": key.strip(),
                             "value": value.strip()
-                        }
-                        specifications.append(spec_item)
+                        })
             except Exception as e:
                 print(f"    [!] Lỗi lấy spec: {e}")
 
-            # 4. Lấy Mô tả -> Map vào descriptionDetail
+            # 3. Lấy Mô tả
             try:
                 intro_element = self.driver.find_element(By.CSS_SELECTOR, ".cps-content-introduction")
-
-                # 2. Lấy Text thuần (Selenium tự động biến <a>link</a> thành text thường)
-                # Ví dụ: "iPhone 17 là <a>phiên bản xịn</a>" -> "iPhone 17 là phiên bản xịn"
-                raw_text = intro_element.text.strip()
-
-                # 3. Gom lại thành 1 chuỗi description (Xử lý xuống dòng nếu có nhiều thẻ p)
-                # Thay thế các dấu xuống dòng (\n) bằng dấu cách để thành 1 đoạn văn liền mạch (nếu muốn)
-                # Hoặc giữ nguyên cấu trúc đoạn văn thì để nguyên. Ở đây mình replace để nó thành 1 khối text đẹp.
-                description = raw_text.replace("\n", " ")
-
-                # 4. Gán Description Detail là Null theo yêu cầu
-                # description_detail = desc_elem.get_attribute("innerHTML") # Lấy HTML để giữ format
-                # description = desc_elem.text[:250] + "..." # Lấy đoạn text ngắn
+                description = intro_element.text.strip().replace("\n", " ")
                 description_detail = ""
             except:
                 description = "Đang cập nhật"
                 description_detail = ""
 
-            # 5. Xử lý Variant (Mô phỏng) -> Map vào [productVariantSchema]
-            # Giả định lấy được 1 ảnh đại diện
+            # 4. Lấy Variants (Màu sắc) và Ảnh đại diện theo màu
+            main_name_color_list = []
+            final_images_list = []
+            
             try:
-                print("[*] Đang lấy danh sách ảnh sản phẩm...")
+                print("    -> Đang lấy danh sách màu và ảnh...")
+                variant_elements = self.driver.find_elements(By.CSS_SELECTOR, ".list-variants .item-variant a")
+                variants_to_process = []
 
-                # 1. Tìm tất cả các thẻ ảnh trong slider
-                # Dựa vào ảnh: class "swiper-slide button__view-gallery" chứa thẻ img
-                # Lưu ý: Class này dùng cho cả nút xem video, nên cần lọc thẻ img có src hợp lệ
+                for elem in variant_elements:
+                    name = elem.get_attribute("title")
+                    v_link = elem.get_attribute("href")
+                    parent_li = elem.find_element(By.XPATH, "./..")
+                    is_active = "active" in parent_li.get_attribute("class")
+                    
+                    variants_to_process.append({
+                        "name": name,
+                        "link": v_link,
+                        "active": is_active
+                    })
+
+                # Lặp qua từng màu để lấy ảnh chính xác
+                for variant in variants_to_process:
+                    self.driver.get(variant['link'])
+                    time.sleep(1.5)
+
+                    try:
+                        active_slide_img = WebDriverWait(self.driver, 5).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, ".swiper-slide.swiper-slide-active img"))
+                        )
+                        raw_src = active_slide_img.get_attribute("src")
+                        clean_src = self.get_clean_image_url(raw_src)
+
+                        main_name_color_list.append({
+                            "color": variant['name'],
+                            "main_image": str(clean_src)
+                        })
+                    except Exception:
+                        pass
+
+                # Lấy bộ sưu tập ảnh (Gallery)
                 image_elements = self.driver.find_elements(By.CSS_SELECTOR, ".swiper-slide.button__view-gallery img")
-                print(f"[*] Tìm thấy {len(image_elements)} thẻ ảnh trong slider.")
-                # Dùng Set để tự động loại bỏ ảnh trùng lặp (do slider thường duplicate ảnh để chạy vòng lặp)
                 gallery_images = set()
-
                 for img in image_elements:
                     try:
-                        # print(img)
-                        # Lấy link thô (thumbnail)
-                        raw_src = img.get_attribute("src")
-                        print(f"    - Tìm thấy ảnh thô: {raw_src}")
-                        # Làm sạch để lấy link gốc chất lượng cao
-                        clean_src = self.get_clean_image_url(raw_src)
-                        
-                        # Chỉ lấy nếu link có đuôi ảnh (.jpg, .png, .webp...) để tránh icon rác
-                        if clean_src and any(ext in clean_src for ext in [".jpg", ".png", ".jpeg", ".webp"]):
-                            gallery_images.add(clean_src)
-                            
-                    except Exception as e:
+                        c_src = self.get_clean_image_url(img.get_attribute("src"))
+                        if c_src and any(ext in c_src for ext in [".jpg", ".png", ".jpeg", ".webp"]):
+                            gallery_images.add(c_src)
+                    except:
                         continue
-
-                # Chuyển về list để dễ lưu vào JSON/DB
                 final_images_list = list(gallery_images)
 
-                print(f"[*] Đã tìm thấy {len(final_images_list)} ảnh chất lượng cao.")
-                print(final_images_list)
+            except Exception as e:
+                print(f"    [!] Lỗi khi xử lý ảnh: {e}")
+
+            # 5. Lấy Giá theo từng Phiên bản (Dung lượng)
+            version_price = []
+            try:
+                list_container = self.driver.find_element(By.CLASS_NAME, "list-linked")
+                versions = list_container.find_elements(By.CLASS_NAME, "item-linked")
+                count = len(versions)
+
+                for i in range(count):
+                    # Tìm lại element để tránh StaleElementReferenceException
+                    try:
+                        self.wait.until(
+                            EC.presence_of_all_elements_located((By.CSS_SELECTOR, ".list-linked .item-linked"))
+                        )
+                    except:
+                        print("    [!] Timeout chờ load danh sách version.")
+                        continue
+                    current_list = self.driver.find_elements(By.CSS_SELECTOR, ".list-linked .item-linked")
+                    if i >= len(current_list):
+                        print(f"    [!] Cảnh báo: Index {i} vượt quá số lượng phần tử tìm thấy ({len(current_list)}). Dừng vòng lặp giá.")
+                        break
+                    current_item = current_list[i]
+                    
+                    version_name = current_item.text.replace("\n", " ").strip()
+                    item_link = current_item.get_attribute("href")
+                    
+                    # Click để lấy giá
+                    self.driver.execute_script("arguments[0].click();", current_item)
+                    time.sleep(2)
+                    
+                    try:
+                        sale_price_elem = self.driver.find_element(By.CSS_SELECTOR, ".box-product-price .sale-price")
+                        sale_price = self.clean_price(sale_price_elem.text)
+                    except:
+                        sale_price = 0
+                    
+                    try:
+                        price_elem = self.driver.find_element(By.CSS_SELECTOR, ".box-product-price .base-price")
+                        price = self.clean_price(price_elem.text)
+                    except:
+                        price = sale_price
+
+                    # Tạo SKU dựa trên link của version
+                    sku = item_link.split("/")[-1].replace(".html", "")
+
+                    version_price.append({
+                        "version": version_name,
+                        "price": price,
+                        "salePrice": sale_price,
+                        "sku": sku
+                    })
 
             except Exception as e:
-                print(f"[!] Lỗi khi lấy ảnh: {e}")
+                print(f"    [!] Lỗi khi lấy giá version: {e}")
 
-            sku = link.split("/")[-1].replace(".html", "")
+            # 6. Tổng hợp Data (Cartesian Product: Version x Color)
+            variants = []    
+            for version in version_price:
+                for image in main_name_color_list:
+                    # Tạo list ảnh riêng cho từng biến thể
+                    current_variant_images = list(final_images_list)
+                    if image['main_image']:
+                        current_variant_images.insert(0, image['main_image'])
+                    
+                    variant_item = {
+                        "version": version['version'],
+                        "colorName": image['color'],
+                        "hexcode": "#000000",
+                        "images": current_variant_images,
+                        "quantity": 100,
+                        "price": version['price'],
+                        "salePrice": version['salePrice'],
+                        "sku": version['sku']
+                    }
+                    variants.append(variant_item)
 
-            variant = {
-                "version": "Standard",      # Cần logic click button để lấy version thật
-                "colorName": "Mặc định",    # Cần logic click màu
-                "hexcode": "#000000",
-                "images": final_images_list if final_images_list else [],
-                "quantity": 100,
-                "price": price,
-                "salePrice": sale_price,
-                "sku": sku
-            }
-
-            # 6. TỔNG HỢP DATA (Khớp 100% với Schema Mongoose)
-            product_schema_data = {
+            # 7. Trả về kết quả
+            return {
                 "title": title,
-                "brand": "Apple" if "iphone" in link else "Samsung", # Logic tạm
+                "brand": "Apple" if "iphone" in link else "Samsung",
                 "description": description,
                 "descriptionDetail": description_detail,
                 "specifications": specifications,
-                "variants": [variant], # Mảng chứa variant
-                "categoryId": "PLACEHOLDER_ID_65f2a...", # Lưu String vì JSON không hiểu ObjectId
+                "variants": variants,
+                "categoryId": "PLACEHOLDER_ID",
                 "isHide": 0,
                 "rating": 5
             }
-            
-            return product_schema_data
 
         except Exception as e:
-            print(f"[!] Lỗi crash khi parse: {e}")
+            print(f"[!] Critical Error: {e}")
             return None
 
     def save_to_json(self, data, filename="products_export.json"):
-        """Lưu list dict ra file JSON"""
         with open(filename, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
         print(f"\n[*] Đã xuất {len(data)} sản phẩm ra file: {filename}")
 
     def test(self):
-        url = "https://cellphones.com.vn/iphone-17-pro-max.html"
+        url = "https://cellphones.com.vn/apple-macbook-air-13-m4-10cpu-8gpu-16gb-256gb-2025.html"
         data = self.parse_product_detail(url)
-        print(json.dumps(data, ensure_ascii=False, indent=4))
+        if data:
+            print(json.dumps(data, ensure_ascii=False, indent=4))
+        else:
+            print("Không lấy được dữ liệu.")
         
     def run(self):
         url = "https://cellphones.com.vn/mobile/apple.html"
