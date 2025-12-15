@@ -10,6 +10,8 @@ import CategoryRouter from "./routes/category.router";
 import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
+import { initStoreOnce } from "./file-search";
+import testRouter from "./routes/test.router";
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -40,6 +42,7 @@ try {
     app.use("/api", CategoryRouter);
     app.use("/api", ProductRouter);
     app.use("/api", PaymentRouter);
+    app.use("/api", testRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
@@ -57,8 +60,5 @@ const server = app.listen(process.env.PORT || 4001, function () {
             : "";
     console.log("Server listening on port " + port);
     connectDatabase();
-    // connectRedis(() => {
-    //     listOkay.push("redis");
-    //     checkAllService(listOkay);
-    // });
+    initStoreOnce("apex-store");
 });

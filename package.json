@@ -21,6 +21,7 @@
   "homepage": "https://github.com/Phuong-MT/IT4409-server#readme",
   "dependencies": {
     "@elastic/elasticsearch": "^9.1.1",
+    "@google/genai": "^1.33.0",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
