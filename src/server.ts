@@ -10,8 +10,8 @@ import CategoryRouter from "./routes/category.router";
 import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
-import { initStoreOnce } from "./file-search";
 import testRouter from "./routes/test.router";
+import { fileSearchService } from "./file-search/file-search-model/file-search-class";
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -60,5 +60,7 @@ const server = app.listen(process.env.PORT || 4001, function () {
             : "";
     console.log("Server listening on port " + port);
     connectDatabase();
-    initStoreOnce("apex-store");
+
+    // create file search store
+    fileSearchService.initStoreOnce("apex-store");
 });
