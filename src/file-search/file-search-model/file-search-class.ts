@@ -50,6 +50,10 @@ class FileSearchService {
         });
     }
 
+    getStoreName() {
+        return this.store.storeName;
+    }
+
     async uploadFile(filePath: string, fileName: string, typeFile?: string) {
         if (this.store?.storeName.length > 0) {
             const buffer = fs.readFileSync(filePath);
