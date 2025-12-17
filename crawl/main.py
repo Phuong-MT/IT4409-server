@@ -1,6 +1,7 @@
 import time
 import json
 import re
+import unicodedata
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -25,7 +26,8 @@ class CellphoneSMasterCrawler:
         self.crawl_detail_engine = CellphoneSJsonCrawler(driver = self.driver)
         self.all_product = []
 
-    def get_all_links_from_category(self, category_url, max_clicks = 5):
+    
+    def get_all_links_from_category(self, category_url, max_clicks = 15):
         """Lấy link"""
         print(f"[*] Truy cập danh mục: {category_url}")
         self.driver.get(category_url)
@@ -42,7 +44,7 @@ class CellphoneSMasterCrawler:
                 # CellphoneS thường dùng class: btn-show-more, btn-load-more...
                 # Ta dùng XPATH tìm nút có chứa chữ "Xem thêm" cho chắc ăn
                 load_more_btn = WebDriverWait(self.driver, 5).until(
-                    EC.element_to_be_clickable((By.CLASS_NAME,"button btn-show-more button__show-more-product"))
+                    EC.element_to_be_clickable((By.CSS_SELECTOR,".button.btn-show-more.button__show-more-product"))
                 )
 
                 # 3. Click nút (Dùng JS click cho mượt, tránh bị banner che)
@@ -68,7 +70,7 @@ class CellphoneSMasterCrawler:
             url = elm.get_attribute("href")
             if url:
                 links.append(url)
-        
+        print(list(set(links)))
         # Xóa trùng lặp ngay tại bước này (nếu danh mục có 2 link giống hệt nhau)
         return list(set(links))
 
@@ -87,10 +89,8 @@ class CellphoneSMasterCrawler:
             # 3. Vào thẳng trang chi tiết 
             print(f"  -> Đang crawl: {link}")
             data = self.crawl_detail_engine.run(link)
-            print(f"Day la data lay tu master:{data}")
+            
             self.all_product.append(data)
-            
-            
             
             # 4. QUAN TRỌNG: Tìm các link anh em (variants) để đánh dấu là "Đã làm"
             # Để tí nữa vòng lặp đến lượt tụi nó thì mình bỏ qua luôn
@@ -115,8 +115,8 @@ class CellphoneSMasterCrawler:
     #     except:
     #         pass
 
-    def run(self):
-        url = "https://cellphones.com.vn/mobile/apple.html"
+    def run(self,url):
+        # url = "https://cellphones.com.vn/phu-kien.html"
         
         # Bước 1: Gom lúa về kho
         raw_links = self.get_all_links_from_category(url)
@@ -126,10 +126,17 @@ class CellphoneSMasterCrawler:
         self.driver.quit()
 if __name__ == "__main__":
     s = CellphoneSMasterCrawler()
-    s.run()
+    # link_url = [
+    #     "https://cellphones.com.vn/phu-kien/apple.html",
+    #     "https://cellphones.com.vn/phu-kien/sac-dien-thoai.html",
+    #     "https://cellphones.com.vn/phu-kien/the-nho-usb-otg.html"
+    # ]
+    # for url in link_url:
+    #     s.run(url)
+    s.run("https://cellphones.com.vn/phu-kien/camera.html")
     data_to_save = s.all_product
     try:
-        with open('data.json','w',encoding='utf-8') as f:
+        with open('camera.json','w',encoding='utf-8') as f:
             json.dump(data_to_save,f, ensure_ascii=False, indent=4)
         print("Create json file success")
     except Exception as e:

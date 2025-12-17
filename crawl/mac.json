@@ -3,7 +3,7 @@
         "title": "Apple MacBook Pro 13 M2 2022 8GB 256GB I Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Sau sự thành công của Macbook Pro M1, Apple tiếp tục cho ra mắt phiên bản nâng cấp với con chip mạnh hơn mang tên Macbook Pro M2 vào năm 2022. Macbook Pro M2 2022 sở hữu một hiệu năng vượt trội với con chip M2, card đồ họa 10 nhân GPU hứa hẹn mang lại cho người dùng những trải nghiệm vượt trội.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -200,7 +200,7 @@
         "title": "MacBook Air M4 13 inch 2025 10CPU 8GPU 16GB 256GB Sạc 70W | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Apple MacBook Air 13 M4 10CPU 8GPU 16GB 256GB Sạc 70W tích hợp RAM 16GB và SSD 256GB, màn hình Liquid Retina 13,6 inch và thời lượng pin lên đến 18 giờ. Thiết bị hỗ trợ sạc nhanh 70W, một cổng MagSafe 3, hai cổng Thunderbolt 4 và kết nối Wi-Fi 6E. Máy sở hữu hệ thống âm thanh bốn loa cùng camera 12MP hỗ trợ Center Stage, đảm bảo trải nghiệm mượt mà và sắc nét.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -1081,7 +1081,7 @@
         "title": "iMac M4 2024 24 inch 10CPU 10GPU 16GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "iMac M4 2024 24 inch 10 CPU 16GB 512 GB là dòng sản phẩm mới nhất của Apple, sở hữu CPU 10 nhân mạnh mẽ, RAM 16GB và ổ cứng SSD 512GB vượt trội. Thiết kế thế hệ iMac mới này mỏng nhẹ với màn hình Retina 4,5K sắc nét, hỗ trợ đồ họa tối ưu, cùng khả năng nâng cấp linh hoạt, mang lại trải nghiệm đỉnh cao cho người dùng.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -3335,7 +3335,7 @@
         "title": "MacBook Pro 16 M4 Pro 14CPU 20GPU 24GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "MacBook Pro 16 inch 24GB 512GB là chiếc laptop lý tưởng với chip M4 Pro với 14 nhân CPU và 20 nhân GPU, mang đến hiệu năng mạnh mẽ, xử lý mượt mà. Máy còn trang bị RAM 24GB và ổ cứng SSD 512GB tốc độ cao đảm bảo hiệu quả vượt trội. Màn hình 16.2 inch Liquid Retina XDR cùng với độ phân giải cao và tần số quét 120Hz sẽ mang lại trải nghiệm hình ảnh sắc nét.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -3665,58 +3665,10 @@
         "rating": 5
     },
     {
-        "title": "Macbook Pro 14 M3 Max 128GB - 8TB | Chính hãng Apple Việt Nam",
-        "brand": "Apple",
-        "description": "Macbook Pro 14 inch M3 Max 128GB 8TB được trang bị thế hệ chip Apple M3 Max 16 nhân chất lượng cao kết hợp cùng GPU có cấu trúc lên đến 30 lõi. Sản phẩm Macbook M3 này cũng hỗ trợ dung lượng RAM đến 128GB và bộ nhớ trong 8TB giúp bạn có thể thoải mái lưu trữ và xử lý mọi tác vụ công việc.",
-        "descriptionDetail": "",
-        "specifications": [
-            {
-                "key": "Loại card đồ họa",
-                "value": "30 nhân\nNeural Engine 16 nhân"
-            },
-            {
-                "key": "Dung lượng RAM",
-                "value": "128GB"
-            },
-            {
-                "key": "Ổ cứng",
-                "value": "8TB"
-            },
-            {
-                "key": "Kích thước màn hình",
-                "value": "14.2 inches"
-            },
-            {
-                "key": "Công nghệ màn hình",
-                "value": "Độ sáng XDR: 1000 nit liên tục ở chế độ toàn màn hình\nĐộ sáng đỉnh 1600 nit (chỉ nội dung HDR)\nTrue Tone\nProMotion"
-            },
-            {
-                "key": "Pin",
-                "value": "72.4Wh"
-            },
-            {
-                "key": "Độ phân giải màn hình",
-                "value": "3024 x 1964 pixels"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "Apple M3 Max 16 nhân"
-            },
-            {
-                "key": "Cổng giao tiếp",
-                "value": "Hai cổng Thunderbolt / USB 4 (USB-C)\nBa cổng Thunderbolt 4 (USB-C)\nCổng HDMI Cổng HDMI\nKhe thẻ nhớ SDXC\nJack 3.5mm"
-            }
-        ],
-        "variants": [],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 0,
-        "rating": 5
-    },
-    {
         "title": "MacBook Pro 14 M4 Pro 14CPU 20GPU 24GB 1TB Nano | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "MacBook Pro 14 M4 Pro 14CPU 20GPU 24GB 1TB Nano đi kèm với màn hình Liquid Retina XDR có kích thước 14.2 inch cùng công nghệ ProMotion tiên tiến. Đặc biệt hơn, chiếc Macbook còn sở hữu các cổng kết nối Thunderbolt 5, HDMI, MagSafe 3, jack 3.5mm và khe cắm thẻ nhớ SDXC. Chiếc Macbook còn tích hợp bàn phím Magic với đèn nền bắt mắt.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -4409,7 +4361,7 @@
         "title": "MacBook Pro 14 M5 10CPU 10GPU 24GB 1TB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "MacBook Pro chip M5 24GB 1TB được trang bị Apple Intelligence với chip M5 có CPU 10 lõi, GPU 10 lõi và bộ xử lý thần kinh 16 lõi giúp cải thiện hiệu suất. Bên cạnh đó, máy còn đi kèm bộ nhớ 24GB cộng thêm ổ cứng SSD 1TB. Ngoài ra, mẫu MacBook Pro M5 này còn sở hữu màn hình Liquid Retina XDR hiển thị sống động.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Chip AI",
@@ -4844,7 +4796,7 @@
         "title": "Mac mini M4 2024 10CPU 10GPU 24GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Mac mini M4 2024 24GB 512GB là phiên bản nâng cấp mạnh mẽ của dòng Apple Mac mini được trang bị chip Apple M4 mạnh mẽ, bộ nhớ RAM 24GB và ổ SSD 512GB vượt trội. Với dung lượng này, mac mini M4 2024 tăng cường khả năng xử lý đa nhiệm mượt mà và lưu trữ dữ liệu nhanh chóng. Thiết kế nhỏ gọn của Mac mini M4 2024 giúp tiết kiệm không gian, trong khi các cổng kết nối Thunderbolt 4 và Wi-Fi 6E đảm bảo tốc độ truyền tải dữ liệu nhanh và ổn định.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -5065,7 +5017,7 @@
         "title": "MacBook Air M3 13 inch 2024 8CPU 8GPU 16GB - 256GB sạc 30W | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Macbook Air M3 13 inch 2024 16GB 256GB được trang bị con chip Apple M3 bao gồm 4 lõi hiệu suất cao, 4 lõi tiết kiệm điện cùng GPU 10 nhân. Bên cạnh đó, chiếc Macbook còn đi kèm với màn hình Liquid Retina có kích thước 13.6 inch với khả năng hiển thị hình ảnh bắt mắt. Máy cũng hỗ trợ công suất sạc 30W và công nghệ Wifi 6E tiên tiến.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -5863,50 +5815,10 @@
         "rating": 5
     },
     {
-        "title": "Mac Pro M2 Ultra 2023 | Chính hãng Apple Việt Nam",
-        "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
-        "specifications": [
-            {
-                "key": "Loại card đồ họa",
-                "value": "60 nhân GPU"
-            },
-            {
-                "key": "Dung lượng RAM",
-                "value": "64GB"
-            },
-            {
-                "key": "Ổ cứng",
-                "value": "1TB SSD\n2 khe SSD PCI 4.0 x16\n4 khe SSD PCI 4.0 x8"
-            },
-            {
-                "key": "Công nghệ màn hình",
-                "value": "Hỗ trợ 6 màn hình ở tần số quét 6K 60Hz\nHỗ trợ 3 màn hình ở tần số quét 8K 60Hz"
-            },
-            {
-                "key": "Hệ điều hành",
-                "value": "macOS"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "Apple M2 Ultra"
-            },
-            {
-                "key": "Cổng giao tiếp",
-                "value": "Thunderbolt 4 (tối đa 40Gb/s)\nDisplayPort USB 4 (tối đa 40Gb/s)\nUSB 3.1 Gen 2 (tối đa 10Gb/s)\nMột cổng USB-A (lên đến 5Gb/s)\nHai cổng Serial ATA (lên đến 6Gb/s)\nHai cổng HDMI\nHai cổng Ethernet 10Gb\nJack cắm tai nghe 3,5 mm"
-            }
-        ],
-        "variants": [],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 0,
-        "rating": 5
-    },
-    {
         "title": "Apple MacBook Air M2 2024 8CPU 8GPU 16GB 256GB I Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Apple Macbook Air M2 2024 16GB 256GB thiết kế siêu mỏng 1.13cm, trang bị chip M2 8 nhân GPU, 16 nhân Neural Engine, RAM khủng 16GB, SSD 256GB, màn hình IPS Liquid Retina Display cùng hệ thống 4 loa cho trải nghiệm đỉnh cao.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -6142,8 +6054,8 @@
     {
         "title": "MacBook Air M4 15 inch 2025 10CPU 10GPU 16GB 256GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -6840,7 +6752,7 @@
         "title": "MacBook Air M2 2024 8CPU 10GPU 16GB 256GB Sạc 30W I Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Macbook Air M2 2024 16GB 256GB 10GPU được trang bị card đồ họa 8 nhân và 16 nhân Neural Engine, giúp xử lý tác vụ đồ họa và trí tuệ nhân tạo siêu mượt mà. Với dung lượng RAM 16GB, dòng Macbook M2 này đảm bảo khả năng đa nhiệm tối ưu, cho phép người dùng làm việc và giải trí đồng thời mà không gặp trở ngại. Kèm theo đó là ổ cứng SSD 256GB, mang lại không gian lưu trữ rộng rãi và tốc độ truy cập dữ liệu nhanh chóng, cải thiện hiệu suất tổng thể của máy.",
-        "descriptionDetail": "",
+        "descriptionDetail": " ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -7197,7 +7109,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 19690000,
-                "sku": "macbook-air-m2-2022-16gb-den"
+                "sku": "macbook-air-m2-30w-2022-16gb-den"
             },
             {
                 "version": "8CPU - 8GPU 16GB - 256GB",
@@ -7232,7 +7144,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 19690000,
-                "sku": "macbook-air-m2-2022-16gb-bac"
+                "sku": "macbook-air-m2-30w-2022-16gb-bac"
             },
             {
                 "version": "8CPU - 8GPU 16GB - 256GB",
@@ -7267,7 +7179,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 19690000,
-                "sku": "macbook-air-m2-2022-16gb-trang-vang"
+                "sku": "macbook-air-m2-30w-2022-16gb-trang-vang"
             },
             {
                 "version": "8CPU - 8GPU 16GB - 256GB",
@@ -7302,7 +7214,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 19690000,
-                "sku": "macbook-air-m2-2022-16gb-xam"
+                "sku": "macbook-air-m2-30w-2022-16gb-xam"
             },
             {
                 "version": "8CPU - 10GPU 8GB - 512GB",
@@ -7337,7 +7249,7 @@
                 "quantity": 100,
                 "price": 27490000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-512gb-den"
+                "sku": "macbook-air-m2-30w-2022-512gb-den"
             },
             {
                 "version": "8CPU - 10GPU 8GB - 512GB",
@@ -7372,7 +7284,7 @@
                 "quantity": 100,
                 "price": 27490000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-512gb-bac"
+                "sku": "macbook-air-m2-30w-2022-512gb-bac"
             },
             {
                 "version": "8CPU - 10GPU 8GB - 512GB",
@@ -7407,7 +7319,7 @@
                 "quantity": 100,
                 "price": 27490000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-512gb-trang-vang"
+                "sku": "macbook-air-m2-30w-2022-512gb-trang-vang"
             },
             {
                 "version": "8CPU - 10GPU 8GB - 512GB",
@@ -7442,7 +7354,7 @@
                 "quantity": 100,
                 "price": 27490000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-512gb-xam"
+                "sku": "macbook-air-m2-30w-2022-512gb-xam"
             },
             {
                 "version": "8CPU - 10GPU 16GB - 256GB",
@@ -7477,7 +7389,7 @@
                 "quantity": 100,
                 "price": 29990000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-16gb-256gb-10gpu-den"
+                "sku": "macbook-air-m2-2022-30w-16gb-256gb-10gpu-den"
             },
             {
                 "version": "8CPU - 10GPU 16GB - 256GB",
@@ -7512,7 +7424,7 @@
                 "quantity": 100,
                 "price": 29990000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-16gb-256gb-10gpu-bac"
+                "sku": "macbook-air-m2-2022-30w-16gb-256gb-10gpu-bac"
             },
             {
                 "version": "8CPU - 10GPU 16GB - 256GB",
@@ -7547,7 +7459,7 @@
                 "quantity": 100,
                 "price": 29990000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-16gb-256gb-10gpu-trang-vang"
+                "sku": "macbook-air-m2-2022-30w-16gb-256gb-10gpu-trang-vang"
             },
             {
                 "version": "8CPU - 10GPU 16GB - 256GB",
@@ -7582,7 +7494,7 @@
                 "quantity": 100,
                 "price": 29990000,
                 "salePrice": 19490000,
-                "sku": "macbook-air-m2-2022-16gb-256gb-10gpu-xam"
+                "sku": "macbook-air-m2-2022-30w-16gb-256gb-10gpu-xam"
             },
             {
                 "version": "8CPU - 8GPU 8GB - 256GB",
@@ -7617,7 +7529,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 17490000,
-                "sku": "macbook-air-m2-2022-den"
+                "sku": "macbook-air-m2-30w-2022-den"
             },
             {
                 "version": "8CPU - 8GPU 8GB - 256GB",
@@ -7652,7 +7564,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 17490000,
-                "sku": "macbook-air-m2-2022-bac"
+                "sku": "macbook-air-m2-30w-2022-bac"
             },
             {
                 "version": "8CPU - 8GPU 8GB - 256GB",
@@ -7687,7 +7599,7 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 17490000,
-                "sku": "macbook-air-m2-2022-trang-vang"
+                "sku": "macbook-air-m2-30w-2022-trang-vang"
             },
             {
                 "version": "8CPU - 8GPU 8GB - 256GB",
@@ -7722,41 +7634,9 @@
                 "quantity": 100,
                 "price": 24990000,
                 "salePrice": 17490000,
-                "sku": "macbook-air-m2-2022-xam"
+                "sku": "macbook-air-m2-30w-2022-xam"
             }
         ],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 0,
-        "rating": 5
-    },
-    {
-        "title": "Apple Macbook Pro 13 inch Touch Bar i7 2.8 256GB 2019 (MV962)",
-        "brand": "Apple",
-        "description": "Đang cập nhật",
-        "descriptionDetail": "",
-        "specifications": [
-            {
-                "key": "Loại card đồ họa",
-                "value": "Intel Iris Plus Graphics 655"
-            },
-            {
-                "key": "Dung lượng RAM",
-                "value": "16GB"
-            },
-            {
-                "key": "Loại RAM",
-                "value": "16GB 2133MHz LPDDR3 memory"
-            },
-            {
-                "key": "Ổ cứng",
-                "value": "256GB SSD"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "Intel Core i7 processor Turbo Boost up to 4.6GHz"
-            }
-        ],
-        "variants": [],
         "categoryId": "PLACEHOLDER_ID",
         "isHide": 0,
         "rating": 5
@@ -7765,7 +7645,7 @@
         "title": "MacBook Air M3 13 inch 2024 8GB - 256GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Macbook Air M3 13 inch 2024 8 CPU 10 GPU tiếp nhận sức mạnh kinh ngạc từ chip M3 và hiệu năng AI cực nhạy và thông minh từ nhân xử lý Neural Engine. Kết hợp với đó là GPU 10 lõi cung cấp khả năng xử lý đồ họa vượt trội. Bộ nhớ 256GB tạo không gian lớn để người dùng thoải mái lưu trữ, thanh RAM 8GB vừa đủ để đáp ứng mọi nhu cầu sử dụng thông thường. Laptop sử dụng màn hình Liquid Retina không chỉ có độ phân giải cao mà các màu sắc cũng được hiển thị chuẩn xác.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -7820,7 +7700,7 @@
                 "quantity": 100,
                 "price": 32990000,
                 "salePrice": 26990000,
-                "sku": "macbook-air-m3-13-inch-2024-16gb-512gb-den"
+                "sku": "macbook-air-m3-30w-13-inch-2024-16gb-512gb-den"
             },
             {
                 "version": "8CPU - 10 GPU 8GB - 512GB Sạc 30W",
@@ -7841,7 +7721,7 @@
                 "quantity": 100,
                 "price": 30490000,
                 "salePrice": 25990000,
-                "sku": "macbook-air-m3-13-inch-2024-8gb-512gb-den"
+                "sku": "macbook-air-m3-30w-13-inch-2024-8gb-512gb-den"
             },
             {
                 "version": "8GB - 256GB 10 GPU",
@@ -7862,7 +7742,7 @@
                 "quantity": 100,
                 "price": 27990000,
                 "salePrice": 24990000,
-                "sku": "macbook-air-m3-13-inch-2024-8cpu-10gpu-den"
+                "sku": "macbook-air-m3-30w-13-inch-2024-8cpu-10gpu-den"
             },
             {
                 "version": "8CPU - 8GPU 16GB - 256GB Sạc 30W",
@@ -7883,7 +7763,7 @@
                 "quantity": 100,
                 "price": 27990000,
                 "salePrice": 24190000,
-                "sku": "macbook-air-m3-13-inch-2024-16gb-256gb-den"
+                "sku": "macbook-air-m3-30w-13-inch-2024-16gb-256gb-den"
             },
             {
                 "version": "8CPU - 10GPU 16GB - 256GB 70W",
@@ -7904,7 +7784,7 @@
                 "quantity": 100,
                 "price": 30490000,
                 "salePrice": 23990000,
-                "sku": "macbook-air-m3-13-inch-2024-16gb-256gb-sac-70w-den"
+                "sku": "macbook-air-m3-30w-13-inch-2024-16gb-256gb-sac-70w-den"
             }
         ],
         "categoryId": "PLACEHOLDER_ID",
@@ -7915,7 +7795,7 @@
         "title": "Mac mini M4 Pro 2024 12CPU 16GPU 24GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Mac mini M4 Pro 2024 24GB 512GB được trang bị chip xử lý Apple M4 Pro 12 lõi, Neural Engine 16 lõi, dung lượng RAM 24GB đi kèm với ổ cứng SSD 512GB. Máy được trang bị GPU 16 lõi, hỗ trợ đồng thời 3 màn hình với cổng Thunderbolt 5 và HDMI. Máy hỗ trợ kết nối Wi‑Fi 6E và Bluetooth 5.3, sử dụng nguồn 155W và kích thước chỉ 5 x 12.7 x 12.7cm.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -8116,7 +7996,7 @@
         "title": "MacBook Pro 14 M4 10CPU 10GPU 16GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "MacBook Pro 14 inch M4 16GB 512GB mang nguồn sức mạnh ấn tượng với con chip M4 10 lõi, GPU 10 lõi Neural Engine 16 lõi khai phá tiềm năng AI kinh ngạc, nâng cấp hiệu năng vượt trội. MacBook sở hữu RAM 16GB mạnh mẽ với tốc độ băng thông 120GB/s cho mọi thao tác trơn tru và được xử lý tốc độ. Bộ nhớ 512GB với loại ổ cứng SSD đem đến không gian lưu trữ lớn cùng khả năng truy xuất dữ liệu tốc độ cao đồng thời bảo vệ dữ liệu an toàn.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -8368,8 +8248,8 @@
     {
         "title": "Mac mini M2 2023 (8 CPU - 10 GPU - 16GB - 512GB) | Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -8482,50 +8362,10 @@
         "rating": 5
     },
     {
-        "title": "Apple MacBook Air 13 inch 256GB MREA2",
-        "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
-        "specifications": [
-            {
-                "key": "Loại card đồ họa",
-                "value": "Intel UHD Graphics 617"
-            },
-            {
-                "key": "Kích thước màn hình",
-                "value": "13.3 inches"
-            },
-            {
-                "key": "Công nghệ màn hình",
-                "value": "LED-backlit IPS LCD"
-            },
-            {
-                "key": "Pin",
-                "value": "Li-Po 50.3 Wh"
-            },
-            {
-                "key": "Độ phân giải màn hình",
-                "value": "2560 x 1600 pixels (2K)"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "Intel Core i5 1.6GHz dual-core, Turbo Boost lên đến 3.6GHz, 4MB L3 cache"
-            },
-            {
-                "key": "Cổng giao tiếp",
-                "value": "Cổng tai nghe 3.5 mm, Thunderbolt 3"
-            }
-        ],
-        "variants": [],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 0,
-        "rating": 5
-    },
-    {
         "title": "MacBook Pro 14 M4 Max 14CPU 32GPU 36GB 1TB Nano | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Macbook Pro M4 Max 14 inch 14CPU - 32GPU 36GB 1TB Nano sẽ giúp người dùng thực hiện các tác vụ nâng cao một cách nhẹ nhàng với chip M4 Max cùng 36GB RAM. Mẫu Macbook Pro này còn được trang bị viên pin có tổng thời gian hoạt động tới 13 giờ duyệt web cùng màn hình Liquid Retina XDR sắc nét. Kèm theo đó là thiết kế hiện đại, nhỏ gọn và đa dạng các chuẩn kết nối để tiện lợi sử dụng cho công việc, giải trí ở bất cứ nơi đâu.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -8617,8 +8457,8 @@
     {
         "title": "MacBook Air 15 inch M2 2023 8GB 256GB sạc 35W | Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -9044,58 +8884,10 @@
         "rating": 5
     },
     {
-        "title": "Macbook Pro 16 M3 Max 128GB - 8TB | Chính hãng Apple Việt Nam",
-        "brand": "Apple",
-        "description": "Macbook Pro 16 inch M3 Max 2023 128GB 8TB là siêu phẩm với chip Apple M3 Max 16 nhân và card đồ họa 40 nhân Neural Engine 16 nhân. Với dung lượng RAM lên đến 128GB và ổ cứng SSD rộng 8TB, cho phép bạn lưu trữ và xử lý dữ liệu lớn một cách dễ dàng. Màn hình Macbook Pro M3 mới này với kích thước 16.2 inches đi cùng với tần số quét 120Hz, mang đến một trải nghiệm hình ảnh mượt mà và sắc nét.",
-        "descriptionDetail": "",
-        "specifications": [
-            {
-                "key": "Loại card đồ họa",
-                "value": "40 nhân\nNeural Engine 16 nhân"
-            },
-            {
-                "key": "Dung lượng RAM",
-                "value": "36GB"
-            },
-            {
-                "key": "Ổ cứng",
-                "value": "1TB"
-            },
-            {
-                "key": "Kích thước màn hình",
-                "value": "16.2 inches"
-            },
-            {
-                "key": "Công nghệ màn hình",
-                "value": "Độ sáng XDR: 1000 nit liên tục ở chế độ toàn màn hình\nĐộ sáng đỉnh 1600 nit (chỉ nội dung HDR)\nTrue Tone\nProMotion"
-            },
-            {
-                "key": "Pin",
-                "value": "140Wh"
-            },
-            {
-                "key": "Độ phân giải màn hình",
-                "value": "3024 x 1964 pixels"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "Apple M3 Max 16 nhân"
-            },
-            {
-                "key": "Cổng giao tiếp",
-                "value": "Hai cổng Thunderbolt / USB 4 (USB-C)\nBa cổng Thunderbolt 4 (USB-C)\nCổng HDMI Cổng HDMI\nKhe thẻ nhớ SDXC\nJack 3.5mm"
-            }
-        ],
-        "variants": [],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 0,
-        "rating": 5
-    },
-    {
         "title": "MacBook Pro 16 M4 Max 16CPU 40GPU 48GB 1TB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "Macbook Pro 16 inch M4 Max 48GB 1TB được ưu ái trang bị CPU Apple M4 Max 16 lõi, hỗ trợ người dùng xử lý mượt mà mọi tác vụ nặng, từ đồ họa đến lập trình. Với RAM 48GB và ổ cứng SSD 1TB, thế hệ Macbook Pro M4 cao cấp này cho phép đa nhiệm nhanh chóng và lưu trữ dữ liệu thoải mái. Cùng với đó là màn hình Liquid Retina XDR 16 inch đạt độ sáng tối đa 1.600 nit, giúp hiển thị sắc nét và sống động, lý tưởng cho công việc sáng tạo chuyên nghiệp.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -9467,8 +9259,8 @@
     {
         "title": "iMac 24 2021 M1 7GPU 8GB 256GB I Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -10217,7 +10009,7 @@
         "title": "MacBook Air M3 15 inch 2024 16GB - 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": "MacBook Air M3 15 inch 2024 16GB 512GB đem tới khả năng hiển thị hình ảnh siêu thực, sống động với màn hình Liquid Retina 15,3 inch cùng công nghệ True Tone. Nền tảng xử lý chính của dòng MacBook Air M3 2024 này tới từ CPU Apple M3 8 lõi, GPU 10 lõi, cùng Neural Engine 16 lõi, hứa hẹn hiệu năng vượt trội. Kèm theo đó là thông số bộ nhớ cũng không kém cạnh bất kỳ đối thủ cùng tầm giá nào với 16GB RAM và 512GB SSD, sẵn sàng cho mọi tác vụ.",
-        "descriptionDetail": "",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -10849,8 +10641,8 @@
     {
         "title": "Apple MacBook Air 13 256GB 2020 I Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -11052,8 +10844,8 @@
     {
         "title": "Apple MacBook Air M1 256GB 2020 I Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
@@ -11206,8 +10998,8 @@
     {
         "title": "Apple Mac Studio M4 Max 2025 14CPU 32GPU 36GB 512GB | Chính hãng Apple Việt Nam",
         "brand": "Apple",
-        "description": "",
-        "descriptionDetail": "",
+        "description": "  ",
+        "descriptionDetail": "  ",
         "specifications": [
             {
                 "key": "Loại card đồ họa",
