@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { ContentListUnion, GoogleGenAI } from "@google/genai";
 import { GenAIClientManager } from "./gen-ai-client-manager";
 import FileSearchModel from "../../models/file-search.mongo";
 import fs from "fs";
@@ -105,11 +105,29 @@ class FileSearchService {
         }
     }
 
-    async queryRAG(contents: string) {
+    async queryRAG(system: string, user: string, schemaResponse?: any) {
         const response = await this.client.models.generateContent({
-            model: "gemini-2.5-flash",
-            contents,
+            model: "gemini-2.5-flash-lite",
+            contents: [
+                {
+                    role: "model",
+                    parts: [
+                        {
+                            text: system,
+                        },
+                    ],
+                },
+                {
+                    role: "user",
+                    parts: [
+                        {
+                            text: user,
+                        },
+                    ],
+                },
+            ],
             config: {
+                responseSchema: schemaResponse,
                 tools: [
                     {
                         fileSearch: {
@@ -124,7 +142,7 @@ class FileSearchService {
 
     async queryRAGWithStream(contents: string, schemaResponse?: any) {
         const stream = await this.client.models.generateContentStream({
-            model: "gemini-1.5-flash",
+            model: "gemini-2.5-flash",
             contents,
             config: {
                 responseSchema: schemaResponse,
