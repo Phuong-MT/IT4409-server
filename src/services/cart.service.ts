@@ -100,7 +100,8 @@ export const updateQuantity = async (req: any, res: any) => {
 // 4. Xóa hẳn sản phẩm khỏi giỏ
 export const removeItem = async (req: any, res: any) => {
     try {
-        const {  userId, productId } = req.body;
+        const userId = req.user.id;
+        const { productId } = req.body;
 
         if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({ message: "Invalid product id" });
