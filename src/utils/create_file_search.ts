@@ -7,8 +7,11 @@ import connectDatabase from "./connectDB";
 import CategoryModel, {
     categoryTableName,
 } from "../models/category-model.mongo";
+import ProductModel from "../models/product-model.mongo";
+import { Contacts } from "../shared/contacts";
 
 const FOLDER_SOURCE_DATA = path.join(process.cwd(), "src/file-search/data");
+const STATUS_EVALUATION = Contacts.Status.Evaluation;
 
 async function getFileChunk(folderName: string) {
     const entries = await readdir(folderName, { withFileTypes: true });
@@ -27,7 +30,6 @@ async function processUploadFile(chunkName) {
 async function main() {
     try {
         mkdir(FOLDER_SOURCE_DATA, { recursive: true });
-
         //step 1: get-data
         console.log("✅ process step 1: get data");
         await connectDatabase();
@@ -44,8 +46,51 @@ async function main() {
             JSON.stringify(categories, null, 2),
             "utf-8"
         );
-        /*
         console.log("Create file categories.json to collection categoryModel");
+        for (const cate of categories) {
+            const products = await ProductModel.aggregate([
+                {
+                    $match: {
+                        categoryId: new mongoose.Types.ObjectId(cate._id),
+                        isHide: { $ne: STATUS_EVALUATION.HIDE },
+                    },
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        title: 1,
+                        brand: 1,
+                        description: 1,
+                        descriptionDetail: 1,
+                        specifications: 1,
+                        variants: 1,
+                        categoryId: 1,
+                        rating: 1,
+                    },
+                },
+            ]);
+
+            const fileProductPath = path.join(
+                FOLDER_SOURCE_DATA,
+                `${cate.name
+                    .trim()
+                    .toLowerCase()
+                    .replace(/đ/g, "d")
+                    .replace(/Đ/g, "d")
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "_")
+                    .replace(/[^\w_]/g, "")}.json`
+            );
+            console.log(products.length);
+            await writeFile(
+                fileProductPath,
+                JSON.stringify(products, null, 2),
+                "utf-8"
+            );
+            console.log("create file products: ", fileProductPath);
+        }
+
         //create file
 
         //base chunk data products
@@ -68,7 +113,6 @@ async function main() {
         for (const chunk of fileChunks) {
             await processUploadFile(chunk);
         }
-        */
     } catch (err: any) {
         console.log("Create vector db error", err);
         process.exitCode = 1;

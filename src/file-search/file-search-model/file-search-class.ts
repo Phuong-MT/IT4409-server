@@ -20,7 +20,9 @@ class FileSearchService {
     async initStoreOnce(storeName: string) {
         const existed = await FileSearchModel.findOne({
             storeDisplayName: storeName,
-        });
+        })
+            .sort({ version: -1 })
+            .lean();
 
         if (existed) {
             this.store = {
@@ -52,6 +54,28 @@ class FileSearchService {
 
     getStoreName() {
         return this.store.storeName;
+    }
+
+    async deleteStore(file_name: string) {
+        await this.client.fileSearchStores.delete({
+            name: file_name,
+            config: { force: true },
+        });
+        console.log("delete store name: ", file_name, "success");
+    }
+
+    async showList() {
+        console.log(await this.client.fileSearchStores.list());
+    }
+    async documentsToStore(storeName: string) {
+        const pager = await this.client.fileSearchStores.documents.list({
+            parent: storeName,
+        });
+        console.log("Document:", pager);
+        for await (const doc of pager) {
+            if (!doc.name) continue;
+            console.log("Document:", doc);
+        }
     }
 
     async uploadFile(filePath: string, fileName: string, typeFile?: string) {
