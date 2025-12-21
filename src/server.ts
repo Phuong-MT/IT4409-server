@@ -10,6 +10,7 @@ import CategoryRouter from "./routes/category.router";
 import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
+import CartRouter from "./routes/cart.router";
 
 const app = express();
 app.use(cors({ origin: "*" }));
@@ -40,6 +41,7 @@ try {
     app.use("/api", CategoryRouter);
     app.use("/api", ProductRouter);
     app.use("/api", PaymentRouter);
+    app.use("/api", CartRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
