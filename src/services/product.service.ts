@@ -49,7 +49,7 @@ export const addProduct = async (req: any, res: any) => {
 
 export const getAllProducts = async (req: any, res: any) => {
     try {
-        const products = await ProductModel.find({isHide: STATUS_EVALUATION.CREATE}).lean();
+        const products = await ProductModel.find({isHide: STATUS_EVALUATION.PUBLIC}).lean();
         res.status(200).json(products);
     } catch (error) {
         res.status(500).json({ message: 'Failed to fetch products', error });

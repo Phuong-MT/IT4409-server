@@ -33,7 +33,8 @@ incremental
 src/data-analytic
 **/api-key
 **/user_data
-
+venv/
 .early.coverage
 logs-local/
 weaviate_1/
+__pycache__
