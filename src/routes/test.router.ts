@@ -3,6 +3,7 @@ import fs from "fs";
 import { fileSearchService } from "../file-search/file-search-model/file-search-class";
 import path from "path";
 import { getUserPromptQuerySearchProduct } from "../utils/prompt/user/query-search-user-prompt";
+import { cleanHTMLChunk } from "../utils";
 
 const testRouter = express.Router();
 
@@ -49,7 +50,8 @@ testRouter.post("/test/query", async (req, res) => {
             ),
             "utf-8"
         );
-        const userPrompt = getUserPromptQuerySearchProduct(text);
+
+        const userPrompt = getUserPromptQuerySearchProduct({ text });
         const result = await fileSearchService.queryRAG(
             systemPrompt,
             userPrompt,
@@ -57,27 +59,19 @@ testRouter.post("/test/query", async (req, res) => {
                 type: "array",
                 items: {
                     type: "object",
-                    required: [
-                        "title",
-                        "brand",
-                        "description",
-                        "descriptionDetail",
-
-                        "categoryId",
-                    ],
+                    required: ["_id", "title", "brand", "categoryId"],
                     properties: {
+                        _id: { type: "string" },
                         title: { type: "string" },
                         brand: { type: "string" },
-                        description: { type: "string" },
-                        descriptionDetail: { type: "string" },
                         categoryId: { type: "string" },
                     },
                     additionalProperties: false,
                 },
             }
         );
-        console.log("result: ", result);
-        return res.status(200).json(result);
+        console.log("result: ", cleanHTMLChunk(result ?? ""));
+        return res.status(200).json(cleanHTMLChunk(result ?? ""));
     } catch (err: any) {
         console.log("Query rag error: ", err);
         return res.status(500).json("Error");

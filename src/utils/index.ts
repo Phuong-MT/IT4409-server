@@ -48,3 +48,12 @@ export function decryptObject(encoded: string): any {
 
     return JSON.parse(decrypted);
 }
+
+export const cleanHTMLChunk = (chunk: string) => {
+    return chunk
+        .replaceAll("\n", "")
+        .replaceAll("html", "")
+        .replaceAll("```", "")
+        .replaceAll(/```\s*/g, "")
+        .replaceAll("json", "");
+};
