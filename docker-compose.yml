@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  # MongoDB service (nếu muốn chạy cùng Docker)
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpass
+      MONGO_INITDB_DATABASE: it-4409
+    volumes:
+      - mongo_data:/data/db
+
+  # Elasticsearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.12.1
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+      - ELASTIC_PASSWORD=changeme   # mật khẩu quản trị
+    ports:
+      - "9200:9200"    # HTTP REST API
+      - "9300:9300"    # giao tiếp giữa các node
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+  # Kibana (web UI để quản lý Elasticsearch)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.12.1
+    container_name: kibana
+    environment:
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+      ELASTICSEARCH_USERNAME: elastic
+      ELASTICSEARCH_PASSWORD: changeme
+    ports:
+      - "5601:5601"
+    networks:
+      - esnet
+
+volumes:
+  mongo_data:
+  es_data:
+
+networks:
+  esnet:
