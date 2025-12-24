@@ -12,18 +12,24 @@ import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
 
 const app = express();
-app.use(cors({ origin: "*" }));
+app.use(
+    cors({
+        origin: (origin, callback) => {
+            if (!origin) return callback(null, true);
+            if (
+                origin.startsWith("http://localhost") ||
+                origin.startsWith("http://127.0.0.1")
+            ) {
+                return callback(null, true);
+            }
+            callback(new Error("Not allowed by CORS"));
+        },
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+    })
+);
 app.use(cookieParser());
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Headers", "X-PINGOTHER, Content-Type");
-    res.header(
-        "Access-Control-Allow-Methods",
-        "GET, POST, PUT, PATCH, DELETE, HEAD, OPTIONS"
-    );
-    next();
-});
 app.use(bodyParser.json({ limit: "500mb" }));
 app.use(
     helmet.contentSecurityPolicy({
