@@ -9,6 +9,11 @@ export const cartSchema = yup.object({
     .string()
     .matches(objectIdRegex, "Invalid Product ID format") // Đảm bảo ID gửi lên đúng chuẩn MongoDB
     .required("Product ID is required"),
+  
+  variantId: yup
+    .string()
+    .matches(/^[0-9a-fA-F]{24}$/, "Invalid Variant ID")
+    .required("Variant ID is required"),  
 
   quantity: yup
     .number()

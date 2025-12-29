@@ -1,12 +1,31 @@
 import mongoose from "mongoose";
 import CartModel from "../models/cart-model.mongo";
-
+import ProductModel from "../models/product-model.mongo";
 // 1. Thêm sản phẩm vào giỏ hàng
 export const addToCart = async (req: any, res: any) => {
     try {
         const userId = req.user.id; 
-        const { productId, quantity } = req.body;
+        const { productId, variantId, quantity } = req.body;
+        const product = await ProductModel.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: "Product not found" });
+        }
 
+        // 3. KIỂM TRA VARIANT CÓ TỒN TẠI TRONG SẢN PHẨM ĐÓ KHÔNG
+        // Lưu ý: product.variants là một Mongoose Array, nên có thể dùng hàm .id() hoặc .find()
+        // Cách chắc chắn nhất là so sánh chuỗi string
+        const variantExists = product.variants.find(
+            (v: any) => v._id.toString() === variantId.toString()
+        );
+
+        if (!variantExists) {
+            return res.status(404).json({ message: "Variant ID does not exist in this product" });
+        }
+        if (quantity > variantExists.quantity) {
+             return res.status(400).json({ 
+                message: "Not enough product" 
+            });
+        }
         // Validate quantity
         if (!quantity || quantity <= 0) {
             return res.status(400).json({ message: "Quantity must be greater than 0" });
@@ -15,7 +34,8 @@ export const addToCart = async (req: any, res: any) => {
         const updatedCart = await CartModel.findOneAndUpdate(
             {
                 userId: userId,
-                productId: productId
+                productId: productId,
+                variantId: variantId
             },
             {
                 $inc: { quantity: quantity } // Cộng dồn số lượng
@@ -37,17 +57,44 @@ export const addToCart = async (req: any, res: any) => {
 export const getCart = async (req: any, res: any) => {
   try {
     const userId = req.user.id; 
-    console.log(userId);
     const cartItems = await CartModel.find({ userId: userId })
       .populate({
         path: "productId",
-        select: "title variants "
+        select: "title variants brand"
       })
       .lean();
+    
+    // 2. Dùng vòng lặp để lọc ra đúng variant khách chọn
+    const finalCartItems = cartItems.map((item: any) => {
+      const product = item.productId;
+      
+      // Nếu sản phẩm gốc bị xóa, trả về null hoặc xử lý tùy ý
+      if (!product) return item;
+
+      // TÌM VARIANT ĐÚNG: So sánh _id trong mảng variants với variantId trong Cart
+      const selectedVariant = product.variants.find(
+        (v: any) => v._id.toString() === item.variantId.toString()
+      );
+
+      return {
+        _id: item._id,       // ID dòng Cart
+        userId: item.userId,
+        quantity: item.quantity,
+        product: {
+          _id: product._id,
+          title: product.title,
+          brand: product.brand,
+          selectedVariant: selectedVariant || null 
+        }
+      };
+    });
+
+    // (Tuỳ chọn) Lọc bỏ những sản phẩm lỗi (không tìm thấy variant/product)
+    const validItems = finalCartItems.filter((item: any) => item.product.selectedVariant !== null);
 
     return res.status(200).json({
       success: true,
-      data: cartItems
+      data: validItems // Trả về danh sách đã được lọc gọn gàng
     });
   } catch (error) {
     return res.status(500).json({
@@ -61,18 +108,16 @@ export const getCart = async (req: any, res: any) => {
 export const updateQuantity = async (req: any, res: any) => {
     try {
         const userId = req.user.id;
-        const { productId, quantity } = req.body;
+        const { productId, variantId, quantity } = req.body;
 
-        if ( !mongoose.isValidObjectId(productId)) {
-            return res.status(400).json({ message: "Invalid product id" });
-        }
-
-        const userObjId = new mongoose.Types.ObjectId(userId);
-        const productObjId = new mongoose.Types.ObjectId(productId);
-
+        const query = { 
+            userId: new mongoose.Types.ObjectId(userId), 
+            productId: new mongoose.Types.ObjectId(productId),
+            variantId: new mongoose.Types.ObjectId(variantId) // <--- QUAN TRỌNG
+        };
         // Trường hợp 1: Số lượng <= 0 -> Xóa sản phẩm
         if (quantity <= 0) {
-            const deletedItem = await CartModel.findOneAndDelete({ userId: userObjId, productId: productObjId });
+            const deletedItem = await CartModel.findOneAndDelete(query);
             
             if (!deletedItem) {
                 return res.status(404).json({ message: 'Item not found in cart' });
@@ -82,7 +127,7 @@ export const updateQuantity = async (req: any, res: any) => {
 
         // Trường hợp 2: Update số lượng mới
         const updatedItem = await CartModel.findOneAndUpdate(
-            { userId: userObjId, productId: productObjId },
+            query,
             { quantity: quantity },
             { new: true }
         ).lean();
@@ -101,15 +146,12 @@ export const updateQuantity = async (req: any, res: any) => {
 export const removeItem = async (req: any, res: any) => {
     try {
         const userId = req.user.id;
-        const { productId } = req.body;
-
-        if (!mongoose.isValidObjectId(productId)) {
-            return res.status(400).json({ message: "Invalid product id" });
-        }
+        const { productId, variantId } = req.body;
 
         const result = await CartModel.deleteOne({
             userId: new mongoose.Types.ObjectId(userId),
-            productId: new mongoose.Types.ObjectId(productId)
+            productId: new mongoose.Types.ObjectId(productId),
+            variantId: new mongoose.Types.ObjectId(variantId)
         });
 
         if (result.deletedCount === 0) {
