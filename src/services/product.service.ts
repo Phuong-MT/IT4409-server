@@ -185,10 +185,10 @@ export const getAllProducts = async (req: Request, res: Response) => {
         }
 
         if(minPrice){
-            processProduct = processProduct.filter(p => p.pricePre !== null && p.pricePre >= Number(minPrice));
+            processProduct = processProduct.filter(p => p.salePricePre !== null && p.salePricePre >= Number(minPrice));
         }
         if(maxPrice){
-            processProduct = processProduct.filter(p => p.pricePre !== null && p.pricePre <= Number(maxPrice));
+            processProduct = processProduct.filter(p => p.salePricePre !== null && p.salePricePre <= Number(maxPrice));
         }
  
 
