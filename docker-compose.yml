@@ -30,20 +30,7 @@ services:
       - es_data:/usr/share/elasticsearch/data
     networks:
       - esnet
-
-  # Kibana (web UI để quản lý Elasticsearch)
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.12.1
-    container_name: kibana
-    environment:
-      ELASTICSEARCH_URL: http://elasticsearch:9200
-      ELASTICSEARCH_USERNAME: elastic
-      ELASTICSEARCH_PASSWORD: changeme
-    ports:
-      - "5601:5601"
-    networks:
-      - esnet
-
+      
 volumes:
   mongo_data:
   es_data:

@@ -10,6 +10,7 @@ import CategoryRouter from "./routes/category.router";
 import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
+import { ElasticSearch } from "../elasticsearch/elastic.client";
 
 const app = express();
 app.use(
@@ -67,4 +68,5 @@ const server = app.listen(process.env.PORT || 4001, function () {
     //     listOkay.push("redis");
     //     checkAllService(listOkay);
     // });
+    ElasticSearch.connected();
 });
