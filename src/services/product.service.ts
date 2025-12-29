@@ -140,6 +140,9 @@ export const getAllProducts = async (req: Request, res: Response) => {
         if(page && isNaN(Number(page))) {
             return res.status(400).json({ message: "Invalid page number" });
         }
+        if (!mongoose.isValidObjectId(idCategory) && idCategory) {
+            return res.status(400).json({ message: "Invalid category id" });
+        }
 
         let limitNum = LIMIT;
         const pageNum = Math.max(Number(page) || 1, 1);
@@ -152,8 +155,8 @@ export const getAllProducts = async (req: Request, res: Response) => {
 
             const filter: any = { isHide: STATUS_EVALUATION.PUBLIC };
             if (idCategory) {
-                const listCategory = Array.isArray(idCategory) ? idCategory : [idCategory];
-                filter.categoryId = { $in: listCategory };
+                // const listCategory = Array.isArray(idCategory) ? idCategory : [idCategory];
+                filter.categoryId = idCategory;
             }
 
             const products = await ProductModel.find(filter).lean()
