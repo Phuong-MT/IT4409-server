@@ -12,6 +12,7 @@ export const addToCart = async (req: any, res: any) => {
         }
 
         // 3. KIỂM TRA VARIANT CÓ TỒN TẠI TRONG SẢN PHẨM ĐÓ KHÔNG
+        // Chú ý
         // Lưu ý: product.variants là một Mongoose Array, nên có thể dùng hàm .id() hoặc .find()
         // Cách chắc chắn nhất là so sánh chuỗi string
         const variantExists = product.variants.find(
@@ -31,6 +32,7 @@ export const addToCart = async (req: any, res: any) => {
             return res.status(400).json({ message: "Quantity must be greater than 0" });
         }
 
+        // Cập nhật giỏ hàng
         const updatedCart = await CartModel.findOneAndUpdate(
             {
                 userId: userId,
