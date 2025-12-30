@@ -3,6 +3,7 @@ import { productTableName } from "../models/product-model.mongo";
 import OrderModel from "../models/order-model.mongo";
 import { IOrder } from "../shared/models/order-model";
 import CartModel from "../models/cart-model.mongo";
+import ProductModel from "../models/product-model.mongo";
 import { IProductItem } from "../shared/models/order-model";
 class OrderService {
     async orderInfoWidthListProductDetail(orderId: string) {
@@ -117,7 +118,7 @@ class OrderService {
             }
 
             let sumPrice = 0;
-            const listProduct : IProductItem[] = [];
+            const listProduct: IProductItem[] = [];
 
             for (const item of cartItems) {
                 const product = item.productId;
@@ -125,6 +126,7 @@ class OrderService {
                 if (!product) {
                     throw new Error(`Product not found for item ${item._id}`);
                 }
+
                 // 2. Tìm Variant cụ thể trong mảng variants của Product
                 // item.variantId lấy từ Cart
                 const variant = product.variants.find(
@@ -134,24 +136,36 @@ class OrderService {
                 if (!variant) {
                     throw new Error(`Variant option no longer exists for product: ${product.title}`);
                 }
+
+                await ProductModel.updateOne(
+                    {
+                        _id: product._id,
+                        "variants._id": variant._id // Tìm đúng variant trong mảng
+                    },
+                    {
+                        $inc: { "variants.$.quantity": -item.quantity } // Trừ số lượng
+                    },
+                    { session } // <--- BẮT BUỘC PHẢI CÓ SESSION
+                );
+                
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
-                const finalPrice = (variant.salePrice && variant.salePrice < variant.price) 
-                                    ? variant.salePrice 
-                                    : variant.price;
+                const finalPrice = (variant.salePrice && variant.salePrice < variant.price)
+                    ? variant.salePrice
+                    : variant.price;
 
                 const itemTotalMoney = finalPrice * item.quantity;
                 sumPrice += itemTotalMoney;
                 listProduct.push({
                     productId: product._id,
                     variantId: variant._id, // <--- LƯU VARIANT ID VÀO ORDER
-                    
+
                     // Tạo tên đầy đủ: "iPhone 15 - Màu Đỏ (128GB)"
-                    title: `${product.title} - ${variant.colorName} (${variant.version})`, 
-                    
+                    title: `${product.title} - ${variant.colorName} (${variant.version})`,
+
                     description: product.description || "",
                     price: finalPrice, // <--- LƯU GIÁ CỦA VARIANT
                     quantity: item.quantity,
-                    discount: 0, 
+                    discount: 0,
                     totalMoney: itemTotalMoney
                 });
             }
@@ -164,9 +178,9 @@ class OrderService {
                 note: note || "",
                 toAddress: toAddress,
                 // statusOrder tự động lấy default từ Schema
-            }], 
-           { session }
-        );
+            }],
+                { session }
+            );
 
             // Xóa giỏ hàng
             await CartModel.deleteMany(
