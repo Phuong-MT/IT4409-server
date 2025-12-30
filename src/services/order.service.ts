@@ -97,9 +97,15 @@ class OrderService {
     }
 
     async createOrderFromCart(userId: string, toAddress: string, note: string) {
+        // Khởi tạo session để dùng MongoDB transaction
         const session = await mongoose.startSession();
         session.startTransaction();
-
+        /**
+         * Lấy danh sách sản phẩm trong giỏ hàng của user
+         * - Tìm theo userId
+         * - populate productId để lấy thông tin chi tiết sản phẩm
+         * - gắn session để đảm bảo transaction nhất quán
+         */
         try {
             // Lấy giỏ hàng và populate sản phẩm
             const cartItems: any = await CartModel.find({ userId: new mongoose.Types.ObjectId(userId) })
