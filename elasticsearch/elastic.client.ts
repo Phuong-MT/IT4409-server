@@ -1,5 +1,7 @@
 import ES from "@elastic/elasticsearch";
 import "dotenv/config";
+import { Contacts } from "../src/shared/contacts";
+const STATUS_HIDE = Contacts.Status.Evaluation;
 
 const configObject = {
     ip: process.env.IP_ELASTIC || "localhost",
@@ -7,7 +9,19 @@ const configObject = {
     user: process.env.USER_ELASTIC || "elastic",
     pass: process.env.PASS_ELASTIC || "changeme",
 };
+
 const { ip, port, user, pass } = configObject;
+interface SearchParams {
+    query?: string;
+    brand?: string;
+    categoryId?: string;
+    specKey?: string;
+    specValue?: string;
+    minPrice?: number;
+    maxPrice?: number;
+    size?: number;
+    page?: number;
+}
 export class ElasticSearch {
     private static readonly esClient: ES.Client = new ES.Client({
         node: `https://${ip}:${port || 9200}`,
@@ -97,4 +111,120 @@ export class ElasticSearch {
         console.log("Numbers index:", indices.length);
         console.log(indices.map((i) => i.index));
     }
+    static searchProductsAdvanced = async (params: SearchParams) => {
+        const {
+            query,
+            brand,
+            categoryId,
+            specKey,
+            specValue,
+            minPrice,
+            maxPrice,
+            size = 20,
+            page = 1,
+        } = params;
+
+        const must: any[] = [];
+        const filter: any[] = [];
+
+        // Full-text search
+        if (query) {
+            must.push({
+                multi_match: {
+                    query,
+                    fields: ["title^3", "description", "specifications.value"],
+                    fuzziness: "AUTO",
+                },
+            });
+        }
+
+        // Filters
+        if (brand) filter.push({ term: { brand } });
+        if (categoryId) filter.push({ term: { categoryId } });
+
+        //Nest variants filter
+        if (specKey || specValue) {
+            const specMust: any[] = [];
+
+            if (specKey) {
+                specMust.push({ term: { "specifications.key": specKey } });
+            }
+
+            if (specValue) {
+                specMust.push({
+                    match: {
+                        "specifications.value": {
+                            query: specValue,
+                            fuzziness: "AUTO",
+                        },
+                    },
+                });
+            }
+
+            filter.push({
+                nested: {
+                    path: "specifications",
+                    query: {
+                        bool: { must: specMust },
+                    },
+                },
+            });
+        }
+
+        // Nested variants filter
+        if (minPrice || maxPrice) {
+            const variantMust: any[] = [];
+
+            if (minPrice || maxPrice) {
+                const range: any = {};
+                if (minPrice) range.gte = minPrice;
+                if (maxPrice) range.lte = maxPrice;
+
+                variantMust.push({ range: { "variants.price": range } });
+            }
+
+            filter.push({
+                nested: {
+                    path: "variants",
+                    query: { bool: { must: variantMust } },
+                },
+            });
+        }
+
+        // filter products status public
+        filter.push({
+            term: {
+                isHide: STATUS_HIDE.PUBLIC,
+            },
+        });
+        const esQuery = {
+            index: "products",
+            from: (page - 1) * size,
+            size,
+            query: {
+                bool: {
+                    must,
+                    filter,
+                },
+            },
+        };
+
+        const result = await this.esClient.search(esQuery);
+
+        const hits = result.hits;
+        const total = (hits.total as any)?.value || 0;
+        const pageTotal = Math.ceil(total / size);
+
+        return {
+            page,
+            size,
+            total,
+            pageTotal,
+            data: hits.hits.map((hit: any) => ({
+                _id: hit._id,
+                ...hit._source,
+                score: hit._score,
+            })),
+        };
+    };
 }
