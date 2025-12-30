@@ -11,6 +11,16 @@ const OrderRouter = Router();
  * POST /api/orders
  * Tạo đơn hàng từ giỏ hàng hiện tại
  */
+
+/**
+ * POST /api/orders
+ * Tạo đơn hàng mới từ giỏ hàng hiện tại của người dùng
+ * 
+ * Yêu cầu:
+ *  - Người dùng đã đăng nhập (auth middleware)
+ *  - Role: USER
+ *  - Body phải có toAddress (địa chỉ giao hàng)
+ */
 OrderRouter.post("/orders",auth, verifyRole([UserRole.USER]), async (req: any, res: any) => {
     try {
         const userId = req.user.id; 
