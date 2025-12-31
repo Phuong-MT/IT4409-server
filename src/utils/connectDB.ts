@@ -8,12 +8,14 @@ const DATABASE = process.env.DATABASE_NAME || "TEST_DB";
 const AUTH_DATABASE = process.env.AUTH_DATABASE || process.env.DATABASE_NAME;
 const USER = process.env.USER_DB || "";
 const PASS = process.env.PASS_DB || "";
+const REPLICA_SET = process.env.REPLICA_SET || "rs0";
 
 const connectDatabase = async (success?: Function, failure?: Function) => {
     const DB_URL = `mongodb://${IP}:${PORT}`;
 
     const mongoSetup: mongoose.ConnectOptions = {
         dbName: DATABASE,
+        replicaSet: REPLICA_SET,
     };
 
     if (USER) {

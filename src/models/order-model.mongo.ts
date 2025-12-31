@@ -19,6 +19,10 @@ const productItemSchema = new Schema<IProductItem>(
             required: true,
             ref: productTableName,
         },
+        variantId: {
+            type: Schema.Types.ObjectId as any, 
+            required: true, 
+        },
         title: { type: String, required: true },
         description: { type: String, required: true },
         price: { type: Number, required: true },

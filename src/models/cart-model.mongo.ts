@@ -23,6 +23,10 @@ const cartSchema = new Schema<CartModelDocument>(
             required: true,
             ref: productTableName,
         },
+        variantId: {
+            type: Schema.Types.ObjectId as any, 
+            required: true, 
+        },
         quantity: { type: Number, required: true },
     },
     { timestamps: true, versionKey: false }

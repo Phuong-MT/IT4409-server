@@ -10,6 +10,8 @@ import CategoryRouter from "./routes/category.router";
 import ProductRouter from "./routes/product.router";
 import connectDatabase from "./utils/connectDB";
 import PaymentRouter from "./routes/payment.router";
+import CartRouter from "./routes/cart.router";
+import OrderRouter from "./routes/order.router";
 import SearchProductRouter from "./routes/search.router";
 import { ElasticSearch } from "../elasticsearch/elastic.client";
 
@@ -48,6 +50,8 @@ try {
     app.use("/api", CategoryRouter);
     app.use("/api", ProductRouter);
     app.use("/api", PaymentRouter);
+    app.use("/api", CartRouter);
+    app.use("/api",OrderRouter);
     app.use("/api", SearchProductRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
