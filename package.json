@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8000 ts-node-dev --respawn --transpile-only src/server.ts"
+    "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8000 ts-node-dev --respawn --transpile-only src/server.ts",
+    "insert-db": "ts-node-dev src/utils/insertDB.ts",
+    "insert-elastic": "ts-node-dev elasticsearch/insert/collection-product/insert-product-elasticsearch.ts",
+    "get-all-product": "ts-node-dev elasticsearch/insert/collection-product/get-data-product.ts"
+  
   },
   "repository": {
     "type": "git",
@@ -20,7 +24,7 @@
   },
   "homepage": "https://github.com/Phuong-MT/IT4409-server#readme",
   "dependencies": {
-    "@elastic/elasticsearch": "^9.1.1",
+  "@elastic/elasticsearch": "^8.10.0",
     "axios": "^1.12.2",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
