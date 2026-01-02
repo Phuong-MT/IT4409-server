@@ -16,6 +16,7 @@ const connectDatabase = async (success?: Function, failure?: Function) => {
     const mongoSetup: mongoose.ConnectOptions = {
         dbName: DATABASE,
         replicaSet: REPLICA_SET,
+        directConnection: true,
     };
 
     if (USER) {
