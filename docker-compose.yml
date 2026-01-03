@@ -1,27 +1,10 @@
 version: '3.8'
 
 services:
-  # MongoDB service (nếu muốn chạy cùng Docker)
-  mongo-keygen:
-    image: mongo:7
-    container_name: mongo-keygen
-    volumes:
-      - ./mongo-keyfile:/keyfile
-    entrypoint: >
-      bash -c "
-      if [ ! -f /keyfile/keyfile ]; then
-        echo 'Generating mongo keyfile...';
-        openssl rand -base64 756 > /keyfile/keyfile;
-        chmod 400 /keyfile/keyfile;
-      fi
-      "
-    restart: "no"
-
+  # MongoDB
   mongodb:
     image: mongo:7
     container_name: mongodb
-    depends_on:
-      - mongo-keygen
     restart: unless-stopped
     ports:
       - "27017:27017"
@@ -32,6 +15,8 @@ services:
       - mongo_data:/data/db
       - ./mongo-keyfile/keyfile:/etc/mongo-keyfile:ro
     command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile", "/etc/mongo-keyfile"]
+    networks:
+      - backendnet
 
   # Elasticsearch
   elasticsearch:
@@ -40,18 +25,31 @@ services:
     environment:
       - discovery.type=single-node
       - ES_JAVA_OPTS=-Xms512m -Xmx512m
-      - ELASTIC_PASSWORD=changeme   # mật khẩu quản trị
+      - ELASTIC_PASSWORD=changeme
     ports:
-      - "9200:9200"    # HTTP REST API
-      - "9300:9300"    # giao tiếp giữa các node
+      - "9200:9200"
+      - "9300:9300"
     volumes:
       - es_data:/usr/share/elasticsearch/data
     networks:
-      - esnet
-      
+      - backendnet
+
+  # Redis
+  redis:
+    image: redis:8
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - backendnet
+
 volumes:
   mongo_data:
   es_data:
+  redis_data:
 
 networks:
-  esnet:
+  backendnet:
