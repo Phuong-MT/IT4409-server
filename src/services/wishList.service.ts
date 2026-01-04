@@ -168,7 +168,8 @@ export const removeFromWishlist = async (req: any, res: any) => {
           items: { productId: productId } // 2. Đưa item có productId này ra khỏi mảng items
         }
       },
-      { timestamps: false }
+      { timestamps: false } 
+      // Tránh modifiedCount = 1
     );
 
     // Kiểm tra xem có gì thay đổi không
