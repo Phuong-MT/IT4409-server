@@ -7,6 +7,7 @@ import {
   getWishlist,
   checkWishlist,
   removeFromWishlist,
+  clearWishlist,
 } from "../services/wishList.service";
 
 const WishListRouter = express.Router();
@@ -37,10 +38,17 @@ WishListRouter.get(
 
 
 WishListRouter.delete(
-  "/wish-list",
+  "/wish-list/:productId",
   auth,
   verifyRole([UserRole.USER]),
   removeFromWishlist
+);
+
+WishListRouter.delete(
+  "/wish-list",
+  auth,
+  verifyRole([UserRole.USER]),
+  clearWishlist
 );
 
 export default WishListRouter;

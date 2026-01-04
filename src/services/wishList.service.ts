@@ -154,9 +154,9 @@ export const checkWishlist = async (req: any, res: any) => {
 export const removeFromWishlist = async (req: any, res: any) => {
   try {
     const userId = req.user.id;
-    const { productId } = req.body;
+    const { productId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(req.body.productId)) {
+    if (!mongoose.Types.ObjectId.isValid(productId)) {
     return res.status(400).json({ message: "Invalid Product ID" });
     }
 
@@ -191,6 +191,34 @@ export const removeFromWishlist = async (req: any, res: any) => {
     return res.status(500).json({
       message: "Failed to remove product from wishlist",
       error,
+    });
+  }
+};
+
+export const clearWishlist = async (req: any, res: any) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await WishlistModel.updateOne(
+      { userId: userId },
+      { $set: { items: [] } } // Làm rỗng mảng items
+    );
+
+    // Kiểm tra xem user có wishlist không 
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ message: "Wishlist not found" });
+    }
+
+    return res.status(200).json({ 
+      message: "Wishlist cleared successfully",
+      data: [] // Trả về mảng rỗng để FE set lại state luôn
+    });
+
+  } catch (error) {
+    // Quan trọng: Phải catch lỗi 500
+    return res.status(500).json({ 
+      message: "Failed to clear wishlist", 
+      error 
     });
   }
 };
