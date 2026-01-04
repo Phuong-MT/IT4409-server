@@ -136,17 +136,6 @@ class OrderService {
                 if (!variant) {
                     throw new Error(`Variant option no longer exists for product: ${product.title}`);
                 }
-
-                await ProductModel.updateOne(
-                    {
-                        _id: product._id,
-                        "variants._id": variant._id // Tìm đúng variant trong mảng
-                    },
-                    {
-                        $inc: { "variants.$.quantity": -item.quantity } // Trừ số lượng
-                    },
-                    { session } // <--- BẮT BUỘC PHẢI CÓ SESSION
-                );
                 
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
                 const finalPrice = (variant.salePrice && variant.salePrice < variant.price)
