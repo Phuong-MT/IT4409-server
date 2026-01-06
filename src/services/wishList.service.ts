@@ -7,10 +7,11 @@ export const addToWishlist = async (req: any, res: any) => {
     const userId = req.user.id; 
     const { productId } = req.body;
 
-    if (!mongoose.Types.ObjectId.isValid(req.body.productId)) {
-    return res.status(400).json({ message: "Invalid Product ID" });
-    }
-    // 1. Kiểm tra product tồn tại 
+    // if (!mongoose.Types.ObjectId.isValid(req.body.productId)) {
+    // return res.status(400).json({ message: "Invalid Product ID" });
+    // }
+    // 1. Kiểm tra product tồn tại
+     
     const product = await ProductModel.findById(productId);
     if (!product) {
       return res.status(404).json({ message: "Product not found" });

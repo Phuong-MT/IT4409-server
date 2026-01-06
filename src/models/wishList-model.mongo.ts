@@ -8,7 +8,9 @@ export interface WishlistDocument extends IWishlist, Document {
   _id: any;
 }
 
+
 export interface IWishlistModel extends Model<WishlistDocument> {}
+
 
 const wishlistItemSchema = new Schema<IWishlistItem>(
   {
@@ -25,10 +27,12 @@ const wishlistItemSchema = new Schema<IWishlistItem>(
   { _id: false }
 );
 
+
+
 const wishlistSchema = new Schema<WishlistDocument>(
   {
     userId: {
-      type: String,
+      type: Schema.Types.ObjectId as any,
       required: true,
       unique: true, // one wishlist per user
     },
@@ -45,7 +49,9 @@ const wishlistSchema = new Schema<WishlistDocument>(
 
 // Indexes
 wishlistSchema.index({ userId: 1 });
+
 wishlistSchema.index({ "items.productId": 1 });
+
 
 const WishlistModel = model<WishlistDocument, IWishlistModel>(
   wishlistTableName,
