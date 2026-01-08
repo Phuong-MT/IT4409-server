@@ -13,6 +13,7 @@ import PaymentRouter from "./routes/payment.router";
 import CartRouter from "./routes/cart.router";
 import OrderRouter from "./routes/order.router";
 import SearchProductRouter from "./routes/search.router";
+import WishListRouter from "./routes/wishList.router";
 import { ElasticSearch } from "../elasticsearch/elastic.client";
 
 const app = express();
@@ -53,6 +54,7 @@ try {
     app.use("/api", CartRouter);
     app.use("/api",OrderRouter);
     app.use("/api", SearchProductRouter);
+    app.use("/api", WishListRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
