@@ -20,8 +20,8 @@ const productItemSchema = new Schema<IProductItem>(
             ref: productTableName,
         },
         variantId: {
-            type: Schema.Types.ObjectId as any, 
-            required: true, 
+            type: Schema.Types.ObjectId as any,
+            required: true,
         },
         title: { type: String, required: true },
         description: { type: String, required: true },
@@ -40,6 +40,9 @@ const orderSchema = new Schema<OrderDocument>(
         sumPrice: { type: Number, required: true },
         note: { type: String },
         toAddress: { type: String, required: true },
+        //user info
+        userName: { type: String },
+        numberPhone: { type: Number },
         statusOrder: {
             type: Number,
             enum: Object.values(STATUS_ORDER),

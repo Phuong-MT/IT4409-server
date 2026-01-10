@@ -5,6 +5,9 @@ import { IOrder } from "../shared/models/order-model";
 import CartModel from "../models/cart-model.mongo";
 import ProductModel from "../models/product-model.mongo";
 import { IProductItem } from "../shared/models/order-model";
+import { Contacts } from "../shared/contacts";
+
+const STATUS_ORDER = Contacts.Status.Order;
 class OrderService {
     async orderInfoWidthListProductDetail(orderId: string) {
         const agg = [
@@ -109,7 +112,9 @@ class OrderService {
          */
         try {
             // Lấy giỏ hàng và populate sản phẩm
-            const cartItems: any = await CartModel.find({ userId: new mongoose.Types.ObjectId(userId) })
+            const cartItems: any = await CartModel.find({
+                userId: new mongoose.Types.ObjectId(userId),
+            })
                 .populate("productId")
                 .session(session);
 
@@ -134,24 +139,27 @@ class OrderService {
                 );
 
                 if (!variant) {
-                    throw new Error(`Variant option no longer exists for product: ${product.title}`);
+                    throw new Error(
+                        `Variant option no longer exists for product: ${product.title}`
+                    );
                 }
 
                 await ProductModel.updateOne(
                     {
                         _id: product._id,
-                        "variants._id": variant._id // Tìm đúng variant trong mảng
+                        "variants._id": variant._id, // Tìm đúng variant trong mảng
                     },
                     {
-                        $inc: { "variants.$.quantity": -item.quantity } // Trừ số lượng
+                        $inc: { "variants.$.quantity": -item.quantity }, // Trừ số lượng
                     },
                     { session } // <--- BẮT BUỘC PHẢI CÓ SESSION
                 );
-                
+
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
-                const finalPrice = (variant.salePrice && variant.salePrice < variant.price)
-                    ? variant.salePrice
-                    : variant.price;
+                const finalPrice =
+                    variant.salePrice && variant.salePrice < variant.price
+                        ? variant.salePrice
+                        : variant.price;
 
                 const itemTotalMoney = finalPrice * item.quantity;
                 sumPrice += itemTotalMoney;
@@ -166,19 +174,22 @@ class OrderService {
                     price: finalPrice, // <--- LƯU GIÁ CỦA VARIANT
                     quantity: item.quantity,
                     discount: 0,
-                    totalMoney: itemTotalMoney
+                    totalMoney: itemTotalMoney,
                 });
             }
 
             // Tạo đơn hàng mới
-            const newOrders = await OrderModel.create([{
-                userId: userId, // Lưu dạng String theo schema của bạn
-                listProduct: listProduct,
-                sumPrice: sumPrice,
-                note: note || "",
-                toAddress: toAddress,
-                // statusOrder tự động lấy default từ Schema
-            }],
+            const newOrders = await OrderModel.create(
+                [
+                    {
+                        userId: userId, // Lưu dạng String theo schema của bạn
+                        listProduct: listProduct,
+                        sumPrice: sumPrice,
+                        note: note || "",
+                        toAddress: toAddress,
+                        // statusOrder tự động lấy default từ Schema
+                    },
+                ],
                 { session }
             );
 
@@ -190,13 +201,36 @@ class OrderService {
 
             await session.commitTransaction();
             return newOrders[0]; // Trả về đơn hàng vừa tạo
-
         } catch (error) {
             await session.abortTransaction();
             throw error; // Ném lỗi ra để Controller bắt
         } finally {
             session.endSession();
         }
+    }
+    async createOrder(params: IOrder) {
+        const {
+            _id,
+            listProduct,
+            userId,
+            sumPrice,
+            note,
+            toAddress,
+            numberPhone,
+            userName,
+            statusOrder,
+        } = params;
+        const newOrder = await OrderModel.create({
+            listProduct,
+            userId,
+            sumPrice,
+            note,
+            toAddress,
+            numberPhone,
+            userName,
+            statusOrder: STATUS_ORDER.ORDERED,
+        });
+        return newOrder;
     }
 }
 

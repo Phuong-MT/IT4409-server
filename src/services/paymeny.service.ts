@@ -31,7 +31,7 @@ class PaymentService {
             case PAYMENT_METHOD.STRIPE:
                 const urlCancel =
                     process.env.WEB_URL +
-                    "/payment/" +
+                    "/checkout/" +
                     encryptObject({
                         orderId: orderId,
                         orderType: PAYMENT_METHOD.STRIPE,
@@ -39,7 +39,7 @@ class PaymentService {
                     } as ISignatureTranscript);
                 const urlSuccess =
                     process.env.WEB_URL +
-                    "/payment/" +
+                    "/checkout/" +
                     encryptObject({
                         orderId: orderId,
                         orderType: PAYMENT_METHOD.STRIPE,
@@ -70,7 +70,7 @@ class PaymentService {
                 momoService.setConfig({
                     redirectUrl:
                         process.env.WEB_URL +
-                        "/payment/" +
+                        "/checkout/" +
                         encryptObject({
                             orderId: orderId,
                             orderType: PAYMENT_METHOD.MOMO,
@@ -88,7 +88,7 @@ class PaymentService {
             case PAYMENT_METHOD.COD:
                 urlRedirect =
                     process.env.WEB_URL +
-                    "/payment/" +
+                    "/checkout/" +
                     encryptObject({
                         orderId: orderId,
                         orderType: PAYMENT_METHOD.COD,

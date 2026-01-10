@@ -6075,54 +6075,6 @@
         "rating": 5
     },
     {
-        "title": "Xiaomi Redmi Pad 2 3GB 32GB",
-        "brand": "Xiaomi",
-        "description": " ",
-        "descriptionDetail": " ",
-        "specifications": [
-            {
-                "key": "Công nghệ màn hình",
-                "value": "IPS LCD"
-            },
-            {
-                "key": "Camera sau",
-                "value": "8 MP"
-            },
-            {
-                "key": "Camera trước",
-                "value": "5 MP"
-            },
-            {
-                "key": "Chipset",
-                "value": "Snapdragon 680"
-            },
-            {
-                "key": "Dung lượng RAM",
-                "value": "3 GB"
-            },
-            {
-                "key": "Bộ nhớ trong",
-                "value": "32 GB"
-            },
-            {
-                "key": "Pin",
-                "value": "10.000 mAh"
-            },
-            {
-                "key": "Độ phân giải màn hình",
-                "value": "1920 x 1200 pixels (FullHD+)"
-            },
-            {
-                "key": "Loại CPU",
-                "value": "4 nhân Cortex-A73 xung nhịp 2.4 GHz, 4 nhân Cortex-A53 xung nhịp 1.8 GHz"
-            }
-        ],
-        "variants": [],
-        "categoryId": "PLACEHOLDER_ID",
-        "isHide": 9,
-        "rating": 5
-    },
-    {
         "title": "iPad Pro M4 13 inch Wifi 1TB Nano I Chính hãng Apple Việt Nam",
         "brand": "Apple",
         "description": " ",
