@@ -3,6 +3,7 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 import cors from "cors";
 import express from "express";
+import { createServer } from "http";
 import helmet from "helmet";
 import { AddressInfo } from "net";
 import AuthRouter from "./routes/auth.router";
@@ -14,8 +15,15 @@ import CartRouter from "./routes/cart.router";
 import OrderRouter from "./routes/order.router";
 import SearchProductRouter from "./routes/search.router";
 import { ElasticSearch } from "../elasticsearch/elastic.client";
+import { createSocketServer } from "./utils/socket.config";
+import { registerSocketListeners } from "./socket/socket.bootstrap";
 
 const app = express();
+const httpServer = createServer(app);
+// register socket
+const io = createSocketServer(httpServer);
+registerSocketListeners(io);
+
 app.use(
     cors({
         origin: (origin, callback) => {
@@ -51,7 +59,7 @@ try {
     app.use("/api", ProductRouter);
     app.use("/api", PaymentRouter);
     app.use("/api", CartRouter);
-    app.use("/api",OrderRouter);
+    app.use("/api", OrderRouter);
     app.use("/api", SearchProductRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
@@ -59,7 +67,7 @@ try {
 } catch (error: any) {
     console.log("error ", error);
 }
-const server = app.listen(process.env.PORT || 4001, function () {
+const server = httpServer.listen(process.env.PORT || 4001, function () {
     //start server
     const addressInfo: string | AddressInfo | null = server.address();
     const port =
