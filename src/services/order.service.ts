@@ -452,12 +452,13 @@ class OrderService {
                                     toAddress: 1,
                                     "payment.method": 1,
                                     "payment.status": 1,
+                                    listProducts: 1,
                                     // Thông tin user Flatten ra cho dễ dùng
                                     "userId": {
                                         _id: "$userInfo._id",
                                         email: "$userInfo.email",
-                                        fullName: "$userInfo.fullName",
-                                        phone: { $ifNull: ["$userInfo.numberPhone", "$userInfo.phone"] }
+                                        fullName: "$userInfo.userName",
+                                        phone: "$userInfo.phoneNumber"
                                     }
                                 }
                             }
