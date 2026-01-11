@@ -58,4 +58,81 @@ OrderRouter.post("/orders",auth, verifyRole([UserRole.USER]), async (req: any, r
     }
 });
 
+OrderRouter.get(
+    "/orders/all", 
+    auth, 
+    verifyRole([UserRole.USER]), // Chỉ Admin mới được xem hết
+    async (req: any, res: any) => {
+        try {
+            // Lấy tham số từ Query String (URL)
+            // Ví dụ: ?page=2&limit=5&status=DONE
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const search = req.query.search as string; // Có thể undefined
+            const status = req.query.status as string; // Có thể undefined
+
+            // Gọi Service
+            const result = await orderServices.getAllOrders(page, limit, search, status);
+
+            return res.status(200).json({
+                message: "Get list orders successfully",
+                data: result
+            });
+
+        } catch (error: any) {
+            console.error("Get All Orders Error:", error);
+            return res.status(500).json({ 
+                message: "Failed to fetch orders", 
+                error: error.message 
+            });
+        }
+    }
+);
+
+// OrderRouter.get("/orders/:id", auth, async (req: any, res: any) => {
+//     try {
+//         const { id } = req.params;
+//         const result = await orderServices.orderInfoWidthListProductDetail(id);
+
+//         if (!result || result.length === 0) {
+//             return res.status(404).json({ message: "Order not found" });
+//         }
+
+//         return res.status(200).json({
+//             message: "Get order detail successfully",
+//             data: result[0]
+//         });
+//     } catch (error: any) {
+//         return res.status(500).json({ message: "Error", error: error.message });
+//     }
+// });
+OrderRouter.get("/orders/:id", auth, async (req: any, res: any) => {
+    try {
+        const { id } = req.params;
+
+        // GỌI HÀM MỚI (Thay vì orderInfoWidthListProductDetail)
+        const order = await orderServices.getOrderById(id);
+
+        if (!order) {
+            return res.status(404).json({ message: "Order not found" });
+        }
+
+        // --- Logic phụ: Kiểm tra quyền xem đơn hàng ---
+        // Nếu không phải Admin VÀ không phải chủ đơn hàng -> Chặn
+        const user = req.user;
+        if (!verifyRole([UserRole.ADMIN]) && order.userId.toString() !== user.id) {
+             return res.status(403).json({ message: "Forbidden: Not your order" });
+        }
+        // ----------------------------------------------
+
+        return res.status(200).json({
+            message: "Get order detail successfully",
+            data: order // Trả về object đơn hàng (không nằm trong mảng)
+        });
+
+    } catch (error: any) {
+        return res.status(500).json({ message: "Error", error: error.message });
+    }
+});
+
 export default OrderRouter;

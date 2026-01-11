@@ -123,8 +123,12 @@ class OrderService {
             for (const item of cartItems) {
                 const product = item.productId;
 
+                // if (!product) {
+                //     throw new Error(`Product not found for item ${item._id}`);
+                // }
                 if (!product) {
-                    throw new Error(`Product not found for item ${item._id}`);
+                    console.warn(`⚠️ Skip cart item ${item._id}: product deleted`);
+                    continue;
                 }
 
                 // 2. Tìm Variant cụ thể trong mảng variants của Product
@@ -133,8 +137,12 @@ class OrderService {
                     (v: any) => v._id.toString() === item.variantId.toString()
                 );
 
+                // if (!variant) {
+                //     throw new Error(`Variant option no longer exists for product: ${product.title}`);
+                // }
                 if (!variant) {
-                    throw new Error(`Variant option no longer exists for product: ${product.title}`);
+                    console.warn(`⚠️ Skip cart item ${item._id}: variant deleted`);
+                    continue;
                 }
                 
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
@@ -187,6 +195,87 @@ class OrderService {
             session.endSession();
         }
     }
+
+    /**
+     * Lấy danh sách đơn hàng (Admin Dashboard)
+     * - Hỗ trợ phân trang (page, limit)
+     * - Hỗ trợ lọc theo trạng thái (status)
+     * - Hỗ trợ tìm kiếm theo Mã đơn hàng (search)
+     */
+    async getAllOrders(page: number = 1, limit: number = 10, search?: string, status?: string) {
+        try {
+            const skip = (page - 1) * limit;
+            
+            // 1. Xây dựng Query Filter
+            const query: any = {};
+
+            // Nếu có status và không phải lấy tất cả
+            if (status && status !== 'ALL') {
+                query.statusOrder = status;
+            }
+
+            // Nếu có từ khóa search (Giả sử search theo Order ID)
+            if (search) {
+                // Kiểm tra xem search text có phải là ObjectId hợp lệ không trước khi query
+                if (mongoose.Types.ObjectId.isValid(search)) {
+                    query._id = new mongoose.Types.ObjectId(search);
+                } else {
+                    // Nếu muốn search theo tên User thì cần logic phức tạp hơn (Aggregate lookup)
+                    // Ở đây tạm thời return rỗng nếu search ID sai format
+                    return {
+                        orders: [],
+                        total: 0,
+                        currentPage: page,
+                        totalPages: 0
+                    };
+                }
+            }
+
+            // 2. Thực hiện Query song song (Lấy data + Đếm tổng số)
+            // Promise.all giúp chạy 2 lệnh cùng lúc cho nhanh
+            const [orders, total] = await Promise.all([
+                OrderModel.find(query)
+                    .populate({
+                        path: "userId",
+                        select: "email fullName phone avatar" // Chỉ lấy các trường cần hiển thị
+                    })
+                    .sort({ createdAt: -1 }) // Sắp xếp mới nhất lên đầu
+                    .skip(skip)
+                    .limit(limit)
+                    .lean(), // Convert sang JSON thuần object (nhẹ hơn Mongoose Document)
+
+                OrderModel.countDocuments(query) // Đếm tổng số record thỏa mãn query
+            ]);
+
+            // 3. Trả về kết quả chuẩn format phân trang
+            return {
+                orders,                 // Danh sách đơn hàng
+                total,                  // Tổng số đơn hàng tìm thấy
+                currentPage: page,      // Trang hiện tại
+                totalPages: Math.ceil(total / limit), // Tổng số trang
+                itemsPerPage: limit
+            };
+
+        } catch (error) {
+            throw error; // Ném lỗi ra để Controller bắt
+        }
+    }
+
+    async getOrderById(orderId: string) {
+
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return null;
+        }
+
+        return await OrderModel.findById(orderId)
+            .populate({
+                path: "userId",
+                select: "email fullName phone avatar" 
+            })
+            .lean(); 
+    }
+
+    
 }
 
 export const orderServices = new OrderService();
