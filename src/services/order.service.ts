@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 import { productTableName } from "../models/product-model.mongo";
 import OrderModel from "../models/order-model.mongo";
 import { IOrder } from "../shared/models/order-model";
@@ -225,7 +225,7 @@ class OrderService {
         return newOrder;
     }
     async userVisibleOrders(userId: string) {
-        const arg = [
+        const arg: PipelineStage[] = [
             { $match: { userId: new mongoose.Types.ObjectId(userId) } },
             {
                 $lookup: {
@@ -261,6 +261,66 @@ class OrderService {
                         },
                     ],
                 },
+            },
+            {
+                $sort: {
+                    createdAt: -1,
+                },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
+    }
+    async getUserCancelledOrders(userId: string) {
+        return OrderModel.aggregate([
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.CANCELLED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ]);
+    }
+    async getUserReturnOrder(userId: string) {
+        const arg: PipelineStage[] = [
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.RETURNED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
             },
         ];
         return await OrderModel.aggregate(arg);

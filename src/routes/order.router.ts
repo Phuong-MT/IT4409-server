@@ -127,4 +127,25 @@ OrderRouter.get("/orders/visible", auth, async (req, res) => {
         return res.status(500).json("Internal server error");
     }
 });
+
+OrderRouter.get("/orders/order-cancel", auth, async (req, res) => {
+    try {
+        const userId = (req as any).user.id;
+        const listOrder = await orderServices.getUserCancelledOrders(userId);
+        return res.status(200).json(listOrder);
+    } catch (err) {
+        console.log("get order cancel error: : ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
+OrderRouter.get("/orders/order-return", auth, async (req, res) => {
+    try {
+        const userId = (req as any).user.id;
+        const listOrder = await orderServices.getUserReturnOrder(userId);
+        return res.status(200).json(listOrder);
+    } catch (err) {
+        console.log("get order return error: : ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
 export default OrderRouter;
