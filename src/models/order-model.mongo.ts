@@ -3,6 +3,7 @@ import { IOrder } from "../shared/models/order-model";
 import { IProductItem } from "../shared/models/order-model";
 import { productTableName } from "./product-model.mongo";
 import { Contacts } from "../shared/contacts";
+import { userTableName } from "./user-model.mongo";
 
 const STATUS_ORDER = Contacts.Status.Order;
 export const orderTableName = "Order";
@@ -20,8 +21,8 @@ const productItemSchema = new Schema<IProductItem>(
             ref: productTableName,
         },
         variantId: {
-            type: Schema.Types.ObjectId as any, 
-            required: true, 
+            type: Schema.Types.ObjectId as any,
+            required: true,
         },
         title: { type: String, required: true },
         description: { type: String, required: true },
@@ -36,10 +37,17 @@ const productItemSchema = new Schema<IProductItem>(
 const orderSchema = new Schema<OrderDocument>(
     {
         listProduct: { type: [productItemSchema], required: true },
-        userId: { type: String, required: true },
+        userId: {
+            type: Schema.Types.ObjectId as any,
+            required: true,
+            ref: userTableName,
+        },
         sumPrice: { type: Number, required: true },
         note: { type: String },
         toAddress: { type: String, required: true },
+        //user info
+        userName: { type: String },
+        numberPhone: { type: String },
         statusOrder: {
             type: Number,
             enum: Object.values(STATUS_ORDER),

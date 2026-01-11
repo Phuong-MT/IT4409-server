@@ -1,10 +1,16 @@
-import mongoose from "mongoose";
+import mongoose, { PipelineStage } from "mongoose";
 import { productTableName } from "../models/product-model.mongo";
 import OrderModel from "../models/order-model.mongo";
 import { IOrder } from "../shared/models/order-model";
 import CartModel from "../models/cart-model.mongo";
 import ProductModel from "../models/product-model.mongo";
 import { IProductItem } from "../shared/models/order-model";
+import { Contacts } from "../shared/contacts";
+
+const STATUS_ORDER = Contacts.Status.Order;
+const PAYMENT_STATUS = Contacts.Status.Payment;
+const PAYMENT_METHOD = Contacts.PaymentMethod;
+
 class OrderService {
     async orderInfoWidthListProductDetail(orderId: string) {
         const agg = [
@@ -109,7 +115,9 @@ class OrderService {
          */
         try {
             // Lấy giỏ hàng và populate sản phẩm
-            const cartItems: any = await CartModel.find({ userId: new mongoose.Types.ObjectId(userId) })
+            const cartItems: any = await CartModel.find({
+                userId: new mongoose.Types.ObjectId(userId),
+            })
                 .populate("productId")
                 .session(session);
 
@@ -134,13 +142,16 @@ class OrderService {
                 );
 
                 if (!variant) {
-                    throw new Error(`Variant option no longer exists for product: ${product.title}`);
+                    throw new Error(
+                        `Variant option no longer exists for product: ${product.title}`
+                    );
                 }
-                
+
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
-                const finalPrice = (variant.salePrice && variant.salePrice < variant.price)
-                    ? variant.salePrice
-                    : variant.price;
+                const finalPrice =
+                    variant.salePrice && variant.salePrice < variant.price
+                        ? variant.salePrice
+                        : variant.price;
 
                 const itemTotalMoney = finalPrice * item.quantity;
                 sumPrice += itemTotalMoney;
@@ -155,19 +166,22 @@ class OrderService {
                     price: finalPrice, // <--- LƯU GIÁ CỦA VARIANT
                     quantity: item.quantity,
                     discount: 0,
-                    totalMoney: itemTotalMoney
+                    totalMoney: itemTotalMoney,
                 });
             }
 
             // Tạo đơn hàng mới
-            const newOrders = await OrderModel.create([{
-                userId: userId, // Lưu dạng String theo schema của bạn
-                listProduct: listProduct,
-                sumPrice: sumPrice,
-                note: note || "",
-                toAddress: toAddress,
-                // statusOrder tự động lấy default từ Schema
-            }],
+            const newOrders = await OrderModel.create(
+                [
+                    {
+                        userId: new mongoose.Types.ObjectId(userId), // Lưu dạng String theo schema của bạn
+                        listProduct: listProduct,
+                        sumPrice: sumPrice,
+                        note: note || "",
+                        toAddress: toAddress,
+                        // statusOrder tự động lấy default từ Schema
+                    },
+                ],
                 { session }
             );
 
@@ -179,13 +193,137 @@ class OrderService {
 
             await session.commitTransaction();
             return newOrders[0]; // Trả về đơn hàng vừa tạo
-
         } catch (error) {
             await session.abortTransaction();
             throw error; // Ném lỗi ra để Controller bắt
         } finally {
             session.endSession();
         }
+    }
+    async createOrder(params: IOrder) {
+        const {
+            _id,
+            listProduct,
+            userId,
+            sumPrice,
+            note,
+            toAddress,
+            numberPhone,
+            userName,
+            statusOrder,
+        } = params;
+        const newOrder = await OrderModel.create({
+            listProduct,
+            userId: new mongoose.Types.ObjectId(userId),
+            sumPrice,
+            note,
+            toAddress,
+            numberPhone,
+            userName,
+            statusOrder: STATUS_ORDER.ORDERED,
+        });
+        return newOrder;
+    }
+    async userVisibleOrders(userId: string) {
+        const arg: PipelineStage[] = [
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: false,
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            "payment.method": PAYMENT_METHOD.COD,
+                            statusOrder: {
+                                $in: [
+                                    STATUS_ORDER.PROCESSING,
+                                    STATUS_ORDER.SHIPPING,
+                                    STATUS_ORDER.DELIVERED,
+                                    STATUS_ORDER.RETURNED,
+                                ],
+                            },
+                        },
+                        {
+                            "payment.method": PAYMENT_METHOD.STRIPE,
+                            "payment.status": PAYMENT_STATUS.PAID,
+                        },
+                    ],
+                },
+            },
+            {
+                $sort: {
+                    createdAt: -1,
+                },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
+    }
+    async getUserCancelledOrders(userId: string) {
+        return OrderModel.aggregate([
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.CANCELLED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ]);
+    }
+    async getUserReturnOrder(userId: string) {
+        const arg: PipelineStage[] = [
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.RETURNED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
     }
 }
 
