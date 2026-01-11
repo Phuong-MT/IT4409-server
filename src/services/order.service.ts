@@ -131,8 +131,12 @@ class OrderService {
             for (const item of cartItems) {
                 const product = item.productId;
 
+                // if (!product) {
+                //     throw new Error(`Product not found for item ${item._id}`);
+                // }
                 if (!product) {
-                    throw new Error(`Product not found for item ${item._id}`);
+                    console.warn(`⚠️ Skip cart item ${item._id}: product deleted`);
+                    continue;
                 }
 
                 // 2. Tìm Variant cụ thể trong mảng variants của Product
@@ -141,10 +145,14 @@ class OrderService {
                     (v: any) => v._id.toString() === item.variantId.toString()
                 );
 
+                // if (!variant) {
+                //     throw new Error(
+                //         `Variant option no longer exists for product: ${product.title}`
+                //     );
+                // }
                 if (!variant) {
-                    throw new Error(
-                        `Variant option no longer exists for product: ${product.title}`
-                    );
+                    console.warn(`⚠️ Skip cart item ${item._id}: variant deleted`);
+                    continue;
                 }
 
                 // 3. Lấy giá từ Variant (Ưu tiên giá Sale của variant nếu có)
@@ -324,6 +332,158 @@ class OrderService {
             },
         ];
         return await OrderModel.aggregate(arg);
+    }
+
+    /**
+     * [ADMIN] Lấy tất cả đơn hàng HỢP LỆ 
+     * - Logic hợp lệ:
+     * + COD: Phải nằm trong các trạng thái cho phép (ORDERED, PROCESSING...)
+     * + Stripe: Bắt buộc Payment Status phải là PAID (Đã trả tiền)
+     */
+    async getAllOrders(page: number = 1, limit: number = 10, search?: string, status?: string) {
+        try {
+            const skip = (page - 1) * limit;
+
+            // 1. Pipeline cơ bản: Join với bảng Payments để kiểm tra độ uy tín
+            const basePipeline: PipelineStage[] = [
+                // Nối bảng Payment
+                {
+                    $lookup: {
+                        from: "payments",
+                        localField: "_id",
+                        foreignField: "orderId",
+                        as: "payment",
+                    },
+                },
+                {
+                    $unwind: {
+                        path: "$payment",
+                        preserveNullAndEmptyArrays: true, // Giữ lại đơn COD (thường chưa có record payment hoặc null)
+                    },
+                },
+                // --- BỘ LỌC CHỐNG SPAM ---
+                {
+                    $match: {
+                        $or: [
+                            // Trường hợp 1: COD (Thanh toán khi nhận hàng)
+                            {
+                                "payment.method": PAYMENT_METHOD.COD,
+                                statusOrder: {
+                                    $in: [
+                                        STATUS_ORDER.ORDERED, // Admin cần thấy đơn mới để duyệt
+                                        STATUS_ORDER.PROCESSING,
+                                        STATUS_ORDER.SHIPPING,
+                                        STATUS_ORDER.DELIVERED,
+                                        STATUS_ORDER.RETURNED,
+                                        STATUS_ORDER.CANCELLED 
+                                    ],
+                                },
+                            },
+                            // Trường hợp 2: Stripe (Thanh toán Online)
+                            // Chỉ lấy đơn đã thanh toán thành công (PAID)
+                            // Đơn bấm nút mà không trả tiền (PENDING/UNPAID) sẽ bị loại bỏ
+                            {
+                                "payment.method": PAYMENT_METHOD.STRIPE,
+                                "payment.status": PAYMENT_STATUS.PAID,
+                            },
+                        ],
+                    },
+                },
+            ];
+
+            // 2. Xử lý Lọc theo Trạng thái & Tìm kiếm từ Admin
+            const matchStage: any = {};
+
+            // Nếu Admin lọc theo tab (ví dụ: Đang giao, Đã giao...)
+            if (status && status !== 'ALL') {
+                matchStage.statusOrder = status;
+            }
+
+            // Nếu Admin tìm kiếm theo mã đơn hàng
+            if (search) {
+                if (mongoose.Types.ObjectId.isValid(search)) {
+                    matchStage._id = new mongoose.Types.ObjectId(search);
+                } else {
+                    // Nếu mã tìm kiếm không hợp lệ -> Trả về rỗng luôn
+                     return {
+                        orders: [],
+                        total: 0,
+                        currentPage: page,
+                        totalPages: 0
+                    };
+                }
+            }
+
+            // Đẩy điều kiện lọc vào pipeline nếu có
+            if (Object.keys(matchStage).length > 0) {
+                basePipeline.push({ $match: matchStage });
+            }
+
+            // 3. Thực thi Query song song (Lấy dữ liệu + Đếm tổng số trang)
+            // Dùng $facet để chạy 1 lần DB lấy được cả 2
+            const result = await OrderModel.aggregate([
+                ...basePipeline,
+                {
+                    $facet: {
+                        // Nhánh 1: Lấy danh sách đơn hàng
+                        orders: [
+                            { $sort: { createdAt: -1 } }, // Mới nhất lên đầu
+                            { $skip: skip },
+                            { $limit: limit },
+                            // Join bảng User để lấy tên, email người mua
+                            {
+                                $lookup: {
+                                    from: "users", 
+                                    localField: "userId",
+                                    foreignField: "_id",
+                                    as: "userInfo"
+                                }
+                            },
+                            {
+                                $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true }
+                            },
+                            // Chỉ lấy các trường cần thiết để hiển thị bảng
+                            {
+                                $project: {
+                                    _id: 1,
+                                    statusOrder: 1,
+                                    sumPrice: 1,
+                                    createdAt: 1,
+                                    toAddress: 1,
+                                    "payment.method": 1,
+                                    "payment.status": 1,
+                                    // Thông tin user Flatten ra cho dễ dùng
+                                    "userId": {
+                                        _id: "$userInfo._id",
+                                        email: "$userInfo.email",
+                                        fullName: "$userInfo.fullName",
+                                        phone: { $ifNull: ["$userInfo.numberPhone", "$userInfo.phone"] }
+                                    }
+                                }
+                            }
+                        ],
+                        // Nhánh 2: Đếm tổng số lượng (sau khi đã lọc sạch rác)
+                        totalCount: [
+                            { $count: "count" }
+                        ]
+                    }
+                }
+            ]);
+
+            const orders = result[0].orders;
+            const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
+
+            return {
+                orders,
+                total,
+                currentPage: page,
+                totalPages: Math.ceil(total / limit),
+                itemsPerPage: limit
+            };
+
+        } catch (error) {
+            throw error;
+        }
     }
 }
 
