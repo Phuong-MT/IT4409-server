@@ -8,7 +8,8 @@
     "dev": "cross-env NODE_OPTIONS=--max-old-space-size=8000 ts-node-dev --respawn --transpile-only src/server.ts",
     "insert-db": "ts-node-dev src/utils/insertDB.ts",
     "insert-elastic": "ts-node-dev elasticsearch/insert/collection-product/insert-product-elasticsearch.ts",
-    "get-all-product": "ts-node-dev elasticsearch/insert/collection-product/get-data-product.ts"
+    "get-all-product": "ts-node-dev elasticsearch/insert/collection-product/get-data-product.ts",
+    "seed": "ts-node-dev src/seed/index.ts"
   },
   "repository": {
     "type": "git",
