@@ -24,7 +24,7 @@ const evaluationSchema = new Schema<EvaluationModelDocument>(
             required: true,
         },
         parentEvaluationId: { type: ObjectId as any, required: false },
-        content: { type: String, required: true },
+        content: { type: [String], required: true },
         rate: { type: Number, required: true },
         isHide: {
             type: Number,
