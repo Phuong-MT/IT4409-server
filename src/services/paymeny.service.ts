@@ -49,7 +49,7 @@ class PaymentService {
                 const lineItem = listProduct.map((e) => {
                     return {
                         price_data: {
-                            currency: "usd",
+                            currency: "vnd",
                             product_data: {
                                 name: e.title,
                                 description: e.description,
@@ -188,7 +188,7 @@ class PaymentService {
                 break;
             case PAYMENT_METHOD.COD:
                 await orderServices.updateOrder(
-                    { statusOrder: STATUS_ORDER.SHIPPING },
+                    { statusOrder: STATUS_ORDER.PROCESSING },
                     orderId
                 );
                 return STATUS_PAYMENT_CHECKUPDATE.PROCESS;

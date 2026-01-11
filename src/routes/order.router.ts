@@ -117,4 +117,14 @@ OrderRouter.post(
     }
 );
 
+OrderRouter.get("/orders/visible", auth, async (req, res) => {
+    try {
+        const userId = (req as any).user.id;
+        const listOrder = await orderServices.userVisibleOrders(userId);
+        return res.status(200).json(listOrder);
+    } catch (err) {
+        console.log("visible order error: ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
 export default OrderRouter;

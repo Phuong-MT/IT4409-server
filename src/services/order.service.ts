@@ -8,6 +8,9 @@ import { IProductItem } from "../shared/models/order-model";
 import { Contacts } from "../shared/contacts";
 
 const STATUS_ORDER = Contacts.Status.Order;
+const PAYMENT_STATUS = Contacts.Status.Payment;
+const PAYMENT_METHOD = Contacts.PaymentMethod;
+
 class OrderService {
     async orderInfoWidthListProductDetail(orderId: string) {
         const agg = [
@@ -171,7 +174,7 @@ class OrderService {
             const newOrders = await OrderModel.create(
                 [
                     {
-                        userId: userId, // Lưu dạng String theo schema của bạn
+                        userId: new mongoose.Types.ObjectId(userId), // Lưu dạng String theo schema của bạn
                         listProduct: listProduct,
                         sumPrice: sumPrice,
                         note: note || "",
@@ -211,7 +214,7 @@ class OrderService {
         } = params;
         const newOrder = await OrderModel.create({
             listProduct,
-            userId,
+            userId: new mongoose.Types.ObjectId(userId),
             sumPrice,
             note,
             toAddress,
@@ -220,6 +223,47 @@ class OrderService {
             statusOrder: STATUS_ORDER.ORDERED,
         });
         return newOrder;
+    }
+    async userVisibleOrders(userId: string) {
+        const arg = [
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: false,
+                },
+            },
+            {
+                $match: {
+                    $or: [
+                        {
+                            "payment.method": PAYMENT_METHOD.COD,
+                            statusOrder: {
+                                $in: [
+                                    STATUS_ORDER.PROCESSING,
+                                    STATUS_ORDER.SHIPPING,
+                                    STATUS_ORDER.DELIVERED,
+                                    STATUS_ORDER.RETURNED,
+                                ],
+                            },
+                        },
+                        {
+                            "payment.method": PAYMENT_METHOD.STRIPE,
+                            "payment.status": PAYMENT_STATUS.PAID,
+                        },
+                    ],
+                },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
     }
 }
 

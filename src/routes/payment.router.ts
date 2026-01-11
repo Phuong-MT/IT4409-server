@@ -123,7 +123,7 @@ PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
 
         const data = decryptObject(id) as ISignatureTranscript;
         const { orderId, orderType, status } = data;
-        if (!orderId || !orderType || !status) {
+        if (!orderId || !orderType) {
             return res.status(400).json("Invalid error");
         }
 
