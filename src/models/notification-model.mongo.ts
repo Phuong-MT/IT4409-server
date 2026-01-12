@@ -7,6 +7,12 @@ const notificationTableName = "Notification";
 export interface NotificationDocument extends INotification, Document {
     _id: any;
 }
+/*
+// type: Order | Product| Payment
+// 
+//    referenceId: string     userId: string
+// 
+*/
 
 export interface INotificationModel extends Model<NotificationDocument> {}
 
