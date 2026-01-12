@@ -1,22 +1,38 @@
-import mongoose, { Schema, Document } from "mongoose";
+import { model, Schema, Document, Model } from "mongoose";
+import { INotification } from "../shared/models/notification-model";
+import { userTableName } from "./user-model.mongo";
 
-export interface INotification extends Document {
-    type: string;
-    title: string;
-    message: string;
-    data: any;
-    readBy: mongoose.Types.ObjectId[]; 
-    createdAt: Date;
+const notificationTableName = "Notification";
+
+export interface NotificationDocument extends INotification, Document {
+    _id: any;
 }
 
-const NotificationSchema = new Schema({
-    type: { type: String, required: true },
-    title: { type: String, required: true },
-    message: { type: String, required: true },
-    data: { type: Object, default: {} },
-    readBy: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }], 
-}, { 
-    timestamps: true 
-});
+export interface INotificationModel extends Model<NotificationDocument> {}
 
-export default mongoose.model<INotification>("Notification", NotificationSchema);
+const NotificationSchema = new Schema<NotificationDocument>(
+    {
+        notificationType: { type: String, required: true },
+        title: { type: String, required: true },
+        message: { type: String, required: true },
+        referenceId: { type: String, required: true },
+        userId: {
+            type: Schema.Types.ObjectId as any,
+            ref: userTableName,
+            required: true,
+        },
+        readBy: [
+            {
+                type: Schema.Types.ObjectId as any,
+                ref: userTableName,
+                default: [],
+            },
+        ],
+    },
+    { timestamps: true, versionKey: false }
+);
+
+export default model<NotificationDocument, INotification>(
+    notificationTableName,
+    NotificationSchema
+);
