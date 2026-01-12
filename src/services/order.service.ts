@@ -337,6 +337,34 @@ class OrderService {
         ];
         return await OrderModel.aggregate(arg);
     }
+    async getUserDeliveryOrder(userId: string) {
+        const arg: PipelineStage[] = [
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.DELIVERED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
+    }
 
     /**
      * [ADMIN] Lấy tất cả đơn hàng HỢP LỆ
