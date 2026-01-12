@@ -5,36 +5,43 @@ import { IRefundReport } from "../shared/models/refund-report-model";
 import  RefundReportModel  from "../models/refund-report-model.mongo";
 import { Contacts } from "../shared/contacts";
 
-// export const reportRefund = async (req: Request, res: Response) => {
-//     try {
-//         const {
-//             orderId,
-//             paymentId,
-//             customerDetail,
-//             refundBy,
-//             reason,
-//             amount,
-//             images,
-//         } = req.body as IRefundReport;
+export const creatReportRefund = async (req: Request, res: Response) => {
+    try {
+        const {
+            orderId,
+            paymentId,
+            cusName,
+            cusMail,
+            cusPhone,
+            refundBy,
+            reason,
+            amount,
+            images,
+        } = req.body;
 
-//         // Validate required fields
-//         const createdReport = await RefundReportModel.create({
-//             orderId,
-//             paymentId,
-//             customerDetail,
-//             refundBy,
-//             reason,
-//             amount,
-//             images,
-//         });
-//         return res.status(200).json(createdReport);
-//     } catch (error) {
-//         console.error("Error reporting refund:", error);
-//         return res.status(500).json({
-//             message: "Internal server error",
-//         });
-//     }
-// };
+        const customerDetail = {
+            name: cusName,
+            email: cusMail,
+            phone: cusPhone
+        };
+        // Validate required fields
+        const createdReport = await RefundReportModel.create({
+            orderId,
+            paymentId,
+            customerDetail,
+            refundBy,
+            reason,
+            amount,
+            images,
+        });
+        return res.status(200).json(createdReport);
+    } catch (error) {
+        console.error("Error reporting refund:", error);
+        return res.status(500).json({
+            message: "Internal server error",
+        });
+    }
+};
 
 export const getRefundReportById = async (req: Request, res: Response) => {
     try {

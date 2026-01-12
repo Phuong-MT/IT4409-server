@@ -48,6 +48,12 @@ export const createRefundReportSchema = yup.object({
     .typeError('Số tiền phải là một con số')
     .positive('Số tiền phải lớn hơn 0')
     .required('Số tiền là bắt buộc'),
+
+    images: yup
+    .array()
+    .of(yup.string().url('Mỗi hình ảnh phải là một URL hợp lệ'))
+    .min(1, 'Phải có ít nhất một hình ảnh')
+    .required('Hình ảnh là bắt buộc'),
 });
 
 export type RefundReportDto = yup.InferType<typeof createRefundReportSchema>;
