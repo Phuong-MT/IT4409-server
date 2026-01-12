@@ -433,7 +433,7 @@ class OrderService {
 
             // Nếu Admin lọc theo tab (ví dụ: Đang giao, Đã giao...)
             if (status && status !== "ALL") {
-                matchStage.statusOrder = status;
+                matchStage.statusOrder = Number(status);
             }
 
             // Nếu Admin tìm kiếm theo mã đơn hàng
