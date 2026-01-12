@@ -148,4 +148,28 @@ OrderRouter.get("/orders/order-return", auth, async (req, res) => {
         return res.status(500).json("Internal server error");
     }
 });
+
+OrderRouter.get(
+    "/orders/all",
+    auth,
+    verifyRole([UserRole.ADMIN]), // Chỉ Admin mới được vào
+    async (req: any, res: any) => {
+        try {
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const search = req.query.search as string;
+            const status = req.query.status as string;
+
+            const result = await orderServices.getAllOrders(page, limit, search, status);
+
+            return res.status(200).json({
+                message: "Get all orders successfully",
+                data: result
+            });
+        } catch (error: any) {
+            console.error("Get All Orders Error:", error);
+            return res.status(500).json({ message: "Internal server error", error: error.message });
+        }
+    }
+);
 export default OrderRouter;

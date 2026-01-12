@@ -58,45 +58,43 @@ export const addToCart = async (req: any, res: any) => {
 // 2. Lấy danh sách giỏ hàng của User
 export const getCart = async (req: any, res: any) => {
   try {
-    const userId = req.user.id; 
-    const cartItems = await CartModel.find({ userId: userId })
+    const userId = req.user.id;
+
+    const cartItems = await CartModel.find({ userId })
       .populate({
         path: "productId",
         select: "title variants brand"
       })
       .lean();
-    
-    // 2. Dùng vòng lặp để lọc ra đúng variant khách chọn
-    const finalCartItems = cartItems.map((item: any) => {
-      const product = item.productId;
-      
-      // Nếu sản phẩm gốc bị xóa, trả về null hoặc xử lý tùy ý
-      if (!product) return item;
 
-      // TÌM VARIANT ĐÚNG: So sánh _id trong mảng variants với variantId trong Cart
-      const selectedVariant = product.variants.find(
-        (v: any) => v._id.toString() === item.variantId.toString()
-      );
+    const finalCartItems = cartItems
+      .map((item: any) => {
+        const product = item.productId;
+        if (!product) return null;
 
-      return {
-        _id: item._id,       // ID dòng Cart
-        userId: item.userId,
-        quantity: item.quantity,
-        product: {
-          _id: product._id,
-          title: product.title,
-          brand: product.brand,
-          selectedVariant: selectedVariant || null 
-        }
-      };
-    });
+        const selectedVariant = product.variants?.find(
+          (v: any) => v._id.toString() === item.variantId.toString()
+        );
 
-    // (Tuỳ chọn) Lọc bỏ những sản phẩm lỗi (không tìm thấy variant/product)
-    const validItems = finalCartItems.filter((item: any) => item.product.selectedVariant !== null);
+        if (!selectedVariant) return null;
+
+        return {
+          _id: item._id,
+          userId: item.userId,
+          quantity: item.quantity,
+          product: {
+            _id: product._id,
+            title: product.title,
+            brand: product.brand,
+            selectedVariant
+          }
+        };
+      })
+      .filter(Boolean); // 🔥 xoá null gọn gàng
 
     return res.status(200).json({
       success: true,
-      data: validItems // Trả về danh sách đã được lọc gọn gàng
+      data: finalCartItems
     });
   } catch (error) {
     return res.status(500).json({
