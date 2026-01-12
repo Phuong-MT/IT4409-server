@@ -1,4 +1,4 @@
-import mongoose, { PipelineStage } from "mongoose";
+import mongoose, { PipelineStage, Types } from "mongoose";
 import { productTableName } from "../models/product-model.mongo";
 import OrderModel from "../models/order-model.mongo";
 import { IOrder } from "../shared/models/order-model";
@@ -546,7 +546,9 @@ class OrderService {
         const searchStage = search
             ? {
                   $or: [
-                      { _id: search },
+                      ...(Types.ObjectId.isValid(search)
+                          ? [{ _id: new Types.ObjectId(search) }]
+                          : []),
                       { userId: search },
                       { userName: { $regex: search, $options: "i" } },
                       { numberPhone: { $regex: search, $options: "i" } },
