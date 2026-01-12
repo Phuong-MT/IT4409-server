@@ -1,29 +1,25 @@
 import NotificationModel from "../models/notification-model.mongo";
 import { socket } from "../socket/socket";
-
+import { registerGateway } from "../socket/socket.gateway"
+import {NotificationTye} from "../shared/models/notification-model"
+import { getIO } from "../utils/socket.config";
 class NotificationService {
     
-    async pushNotification(type: string, title: string, message: string, data: any = {}) {
+    async pushNotification(type: NotificationTye, title: string, message: string, referenceId: string, userId: string) {
         try {
             // 1. Lưu vào MongoDB
-            const newNotif = await NotificationModel.create({
+            const newNotification = {
                 type,
                 title,
                 message,
-                data,
+                referenceId,
+                userId,
                 readBy: []
-            });
-
-            // 2. Bắn Socket ngay lập tức
-            // Dùng hàm emitToRoom bạn đã có trong file socket.ts
-            socket.emitToRoom(
-                "admin:notification", // Tên sự kiện client sẽ nghe
-                newNotif,             // Dữ liệu gửi đi
-                "/admin",             // Tên Room (Khớp với gateway admin:join)
-                "/admin"              // Namespace
-            );
+            }
+            const NotificationSaved = await NotificationModel.create(newNotification);
+            getIO()?.of("/admin").emit("admin:join_room", newNotification);
             
-            return newNotif;
+            return NotificationSaved;
         } catch (error) {
             console.error("❌ Notification Error:", error);
             // Không throw error để tránh làm lỗi quy trình chính (như tạo đơn hàng)

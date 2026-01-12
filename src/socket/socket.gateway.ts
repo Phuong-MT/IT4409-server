@@ -6,8 +6,8 @@ export const registerGateway = (socket) => {
         ack("ok");
     });
 
-    socket.on("admin:join", () => {
+    socket.on("admin:join", (data) => {
         console.log("Admin joining room...");
-        getIO()?.of("/admin").emit("admin:join_room", "client join room");
+        getIO()?.of("/admin").emit("admin:join_room", data);
     });
 };

@@ -8,10 +8,13 @@ import ProductModel, {
 } from "../models/product-model.mongo";
 import { Contacts } from "../shared/contacts";
 import { getArray, setArray } from "../cache/redisUtils";
+import { notificationService } from "./notification.service";
+import { NotificationTye } from "../shared/models/notification-model";
 const STATUS_EVALUATION = Contacts.Status.Evaluation;
 const LIMIT = 20;
 export const addProduct = async (req: Request, res: Response) => {
     try {
+        const userId = (req as any).user._id;
         const {
             title,
             brand,
@@ -47,6 +50,14 @@ export const addProduct = async (req: Request, res: Response) => {
         // 4. Lưu vào database
         const savedProduct = await newProduct.save();
 
+        notificationService.pushNotification(
+            "PRODUCT",
+            "Product created",
+            "Product created successfully",
+            savedProduct._id.toString(),
+            userId,
+        );
+        
         return res.status(201).json({
             success: true,
             message: "Add product successfully",

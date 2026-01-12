@@ -7,12 +7,6 @@ const notificationTableName = "Notification";
 export interface NotificationDocument extends INotification, Document {
     _id: any;
 }
-/*
-// type: Order | Product| Payment
-// 
-//    referenceId: string     userId: string
-// 
-*/
 
 export interface INotificationModel extends Model<NotificationDocument> {}
 
@@ -38,7 +32,9 @@ const NotificationSchema = new Schema<NotificationDocument>(
     { timestamps: true, versionKey: false }
 );
 
-export default model<NotificationDocument, INotification>(
+const NotificationModel =  model<NotificationDocument, INotificationModel>(
     notificationTableName,
     NotificationSchema
 );
+
+export default NotificationModel;
