@@ -1,4 +1,4 @@
-import { registerGateway, registerGatewayAdmin } from "./socket.gateway";
+import { registerGateway } from "./socket.gateway";
 
 export const registerSocketListeners = (io) => {
     //admin
@@ -6,8 +6,6 @@ export const registerSocketListeners = (io) => {
         console.log("🔌 Connected:", socket.id);
 
         registerGateway(socket);
-
-        registerGatewayAdmin(io, socket);
 
         socket.on("disconnect", () => {
             console.log("❌ Disconnected:", socket.id);
