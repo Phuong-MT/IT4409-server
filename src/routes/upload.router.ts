@@ -3,10 +3,10 @@ import { uploadImage } from "../middlewares/upload";
 import { uploadImageBuffer } from "../upload/upload.image";
 import { auth } from "../middlewares/auth";
 
-const TestRouter = express.Router();
+const UploadRouter = express.Router();
 
-TestRouter.post(
-    "/test/image",
+UploadRouter.post(
+    "/upload/image",
     auth,
     uploadImage.single("file"),
     async (req, res) => {
@@ -27,4 +27,4 @@ TestRouter.post(
         }
     }
 );
-export default TestRouter;
+export default UploadRouter;

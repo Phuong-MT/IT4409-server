@@ -1,9 +1,6 @@
-import express from "express";
 import { Request, Response } from "express";
-import { IRefundReport } from "../shared/models/refund-report-model";
-
-import  RefundReportModel  from "../models/refund-report-model.mongo";
-import { Contacts } from "../shared/contacts";
+import RefundReportModel from "../models/refund-report-model.mongo";
+import mongoose from "mongoose";
 
 export const creatReportRefund = async (req: Request, res: Response) => {
     try {
@@ -13,7 +10,6 @@ export const creatReportRefund = async (req: Request, res: Response) => {
             cusName,
             cusMail,
             cusPhone,
-            refundBy,
             reason,
             amount,
             images,
@@ -22,14 +18,15 @@ export const creatReportRefund = async (req: Request, res: Response) => {
         const customerDetail = {
             name: cusName,
             email: cusMail,
-            phone: cusPhone
+            phone: cusPhone,
         };
+        const userId = (req as any).user.id;
         // Validate required fields
         const createdReport = await RefundReportModel.create({
             orderId,
             paymentId,
             customerDetail,
-            refundBy,
+            refundBy: new mongoose.Types.ObjectId(userId),
             reason,
             amount,
             images,
@@ -72,6 +69,3 @@ export const getRefundReports = async (req: Request, res: Response) => {
         });
     }
 };
-
-
-
