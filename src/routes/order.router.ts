@@ -4,7 +4,7 @@ import { verifyRole } from "../middlewares/verifyRole";
 import { UserRole } from "../shared/models/user-model";
 import { orderServices } from "../services/order.service";
 import { validate } from "../middlewares/validate";
-import { createOrderSchema } from "../dto/order.dto";
+import { changeOrderSchema, createOrderSchema } from "../dto/order.dto";
 import { Contacts } from "../shared/contacts";
 import { IProductItem } from "../shared/models/order-model";
 
@@ -209,6 +209,27 @@ OrderRouter.get(
             return res.status(200).json(response);
         } catch (err) {
             console.log("get order-payment error: ", err);
+            return res.status(500).json("Internal server error");
+        }
+    }
+);
+
+OrderRouter.put(
+    "/orders/change",
+    auth,
+    validate(changeOrderSchema),
+    async (req, res) => {
+        try {
+            const { statusOrder, orderId } = req.body;
+            await orderServices.updateOrder(
+                {
+                    statusOrder,
+                },
+                orderId
+            );
+            return res.status(200).json(true);
+        } catch (err) {
+            console.log("chage status order error: ", err);
             return res.status(500).json("Internal server error");
         }
     }
