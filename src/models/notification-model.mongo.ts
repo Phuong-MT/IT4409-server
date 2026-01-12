@@ -1,20 +1,33 @@
 import mongoose, { Schema, Document } from "mongoose";
-
+import { userTableName } from "./user-model.mongo";
+import { triggerAsyncId } from "async_hooks";
 export interface INotification extends Document {
     type: string;
     title: string;
     message: string;
-    data: any;
-    readBy: mongoose.Types.ObjectId[]; 
+    referenceId: string;
+    userId: string;
+    readBy: string[];
+    
     createdAt: Date;
 }
+/*
+// type: Order | Product| Payment
+// 
+//    referenceId: string     userId: string
+// 
+*/
 
-const NotificationSchema = new Schema({
+
+
+
+const NotificationSchema = new Schema<INotification>({
     type: { type: String, required: true },
     title: { type: String, required: true },
     message: { type: String, required: true },
-    data: { type: Object, default: {} },
-    readBy: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }], 
+    referenceId: { type: String, required: true },
+    userId: { type: String, ref: userTableName, required: true },
+    readBy: [{ type: String, ref: userTableName, default: [] }], 
 }, { 
     timestamps: true 
 });
