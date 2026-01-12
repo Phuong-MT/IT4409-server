@@ -148,6 +148,16 @@ OrderRouter.get("/orders/order-return", auth, async (req, res) => {
         return res.status(500).json("Internal server error");
     }
 });
+OrderRouter.get("/orders/order-delivery", auth, async (req, res) => {
+    try {
+        const userId = (req as any).user.id;
+        const listOrder = await orderServices.getUserDeliveryOrder(userId);
+        return res.status(200).json(listOrder);
+    } catch (err) {
+        console.log("get order return error: : ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
 
 OrderRouter.get(
     "/orders/all",
@@ -160,15 +170,23 @@ OrderRouter.get(
             const search = req.query.search as string;
             const status = req.query.status as string;
 
-            const result = await orderServices.getAllOrders(page, limit, search, status);
+            const result = await orderServices.getAllOrders(
+                page,
+                limit,
+                search,
+                status
+            );
 
             return res.status(200).json({
                 message: "Get all orders successfully",
-                data: result
+                data: result,
             });
         } catch (error: any) {
             console.error("Get All Orders Error:", error);
-            return res.status(500).json({ message: "Internal server error", error: error.message });
+            return res.status(500).json({
+                message: "Internal server error",
+                error: error.message,
+            });
         }
     }
 );
