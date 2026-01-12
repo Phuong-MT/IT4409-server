@@ -135,7 +135,9 @@ class OrderService {
                 //     throw new Error(`Product not found for item ${item._id}`);
                 // }
                 if (!product) {
-                    console.warn(`⚠️ Skip cart item ${item._id}: product deleted`);
+                    console.warn(
+                        `⚠️ Skip cart item ${item._id}: product deleted`
+                    );
                     continue;
                 }
 
@@ -151,7 +153,9 @@ class OrderService {
                 //     );
                 // }
                 if (!variant) {
-                    console.warn(`⚠️ Skip cart item ${item._id}: variant deleted`);
+                    console.warn(
+                        `⚠️ Skip cart item ${item._id}: variant deleted`
+                    );
                     continue;
                 }
 
@@ -333,14 +337,47 @@ class OrderService {
         ];
         return await OrderModel.aggregate(arg);
     }
+    async getUserDeliveryOrder(userId: string) {
+        const arg: PipelineStage[] = [
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.DELIVERED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
+    }
 
     /**
-     * [ADMIN] Lấy tất cả đơn hàng HỢP LỆ 
+     * [ADMIN] Lấy tất cả đơn hàng HỢP LỆ
      * - Logic hợp lệ:
      * + COD: Phải nằm trong các trạng thái cho phép (ORDERED, PROCESSING...)
      * + Stripe: Bắt buộc Payment Status phải là PAID (Đã trả tiền)
      */
-    async getAllOrders(page: number = 1, limit: number = 10, search?: string, status?: string) {
+    async getAllOrders(
+        page: number = 1,
+        limit: number = 10,
+        search?: string,
+        status?: string
+    ) {
         try {
             const skip = (page - 1) * limit;
 
@@ -375,7 +412,7 @@ class OrderService {
                                         STATUS_ORDER.SHIPPING,
                                         STATUS_ORDER.DELIVERED,
                                         STATUS_ORDER.RETURNED,
-                                        STATUS_ORDER.CANCELLED 
+                                        STATUS_ORDER.CANCELLED,
                                     ],
                                 },
                             },
@@ -395,7 +432,7 @@ class OrderService {
             const matchStage: any = {};
 
             // Nếu Admin lọc theo tab (ví dụ: Đang giao, Đã giao...)
-            if (status && status !== 'ALL') {
+            if (status && status !== "ALL") {
                 matchStage.statusOrder = status;
             }
 
@@ -405,11 +442,11 @@ class OrderService {
                     matchStage._id = new mongoose.Types.ObjectId(search);
                 } else {
                     // Nếu mã tìm kiếm không hợp lệ -> Trả về rỗng luôn
-                     return {
+                    return {
                         orders: [],
                         total: 0,
                         currentPage: page,
-                        totalPages: 0
+                        totalPages: 0,
                     };
                 }
             }
@@ -433,14 +470,17 @@ class OrderService {
                             // Join bảng User để lấy tên, email người mua
                             {
                                 $lookup: {
-                                    from: "users", 
+                                    from: "users",
                                     localField: "userId",
                                     foreignField: "_id",
-                                    as: "userInfo"
-                                }
+                                    as: "userInfo",
+                                },
                             },
                             {
-                                $unwind: { path: "$userInfo", preserveNullAndEmptyArrays: true }
+                                $unwind: {
+                                    path: "$userInfo",
+                                    preserveNullAndEmptyArrays: true,
+                                },
                             },
                             // Chỉ lấy các trường cần thiết để hiển thị bảng
                             {
@@ -454,34 +494,33 @@ class OrderService {
                                     "payment.status": 1,
                                     listProducts: 1,
                                     // Thông tin user Flatten ra cho dễ dùng
-                                    "userId": {
+                                    userId: {
                                         _id: "$userInfo._id",
                                         email: "$userInfo.email",
                                         fullName: "$userInfo.userName",
-                                        phone: "$userInfo.phoneNumber"
-                                    }
-                                }
-                            }
+                                        phone: "$userInfo.phoneNumber",
+                                    },
+                                },
+                            },
                         ],
                         // Nhánh 2: Đếm tổng số lượng (sau khi đã lọc sạch rác)
-                        totalCount: [
-                            { $count: "count" }
-                        ]
-                    }
-                }
+                        totalCount: [{ $count: "count" }],
+                    },
+                },
             ]);
 
             const orders = result[0].orders;
-            const total = result[0].totalCount[0] ? result[0].totalCount[0].count : 0;
+            const total = result[0].totalCount[0]
+                ? result[0].totalCount[0].count
+                : 0;
 
             return {
                 orders,
                 total,
                 currentPage: page,
                 totalPages: Math.ceil(total / limit),
-                itemsPerPage: limit
+                itemsPerPage: limit,
             };
-
         } catch (error) {
             throw error;
         }
