@@ -8,6 +8,7 @@ import {
     ISignatureTranscript,
     paymentService,
 } from "../services/paymeny.service";
+import { notificationService } from "../services/notification.service";
 
 const PAYMENT_METHOD = Contacts.PaymentMethod;
 const DELIVERY = Contacts.Delivery;
@@ -153,12 +154,20 @@ PaymentRouter.get("/payment/weeb-hook", (req, res) => {
 
 PaymentRouter.put("/payment/change", auth, async (req, res) => {
     try {
+        const userId = (req as any).user._id;
         const { status, paymentId } = req.body;
         await paymentService.updatePayment(
             {
                 status,
             },
             paymentId
+        );
+        notificationService.pushNotification(
+            "PAYMENT",
+            "Payment update",
+            `Payment #${paymentId.toString()} updated successfully`,
+            paymentId.toString(),
+            userId
         );
         return res.status(200).json(true);
     } catch (err) {
