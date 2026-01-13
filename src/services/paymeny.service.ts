@@ -7,6 +7,7 @@ import { stripeService } from "./stripe.services";
 import { momoService } from "./momo.service";
 import { orderServices } from "./order.service";
 import mongoose from "mongoose";
+import { notificationService } from "./notification.service";
 
 const PAYMENT_METHOD = Contacts.PaymentMethod;
 const STATUS_PAYMENT_TRANSCRIPT = Contacts.Status.Payment_transcript;
@@ -141,11 +142,10 @@ class PaymentService {
             }
         );
     }
-    async paymentCheckUpdate({
-        orderId,
-        orderType,
-        status,
-    }: ISignatureTranscript) {
+    async paymentCheckUpdate(
+        { orderId, orderType, status }: ISignatureTranscript,
+        userId: string
+    ) {
         switch (orderType) {
             case PAYMENT_METHOD.STRIPE:
                 if (status === STATUS_PAYMENT_TRANSCRIPT.SUCCESS) {
@@ -167,7 +167,22 @@ class PaymentService {
                             { statusOrder: STATUS_ORDER.SHIPPING },
                             orderId
                         );
+                        notificationService.pushNotification(
+                            "PAYMENT",
+                            "Payment paid",
+                            `PaymentId #${paymentUpdated._id.toString()} created successfully`,
+                            orderId.toString(),
+                            userId
+                        );
+                        notificationService.pushNotification(
+                            "ORDER",
+                            "Order created",
+                            `OrderId #${orderId.toString()} created successfully`,
+                            orderId.toString(),
+                            userId
+                        );
                     }
+
                     return STATUS_PAYMENT_CHECKUPDATE.SUCCESS;
                 } else {
                     const paymentUpdated = await PaymentModel.findOneAndUpdate(
@@ -190,6 +205,13 @@ class PaymentService {
                 await orderServices.updateOrder(
                     { statusOrder: STATUS_ORDER.PROCESSING },
                     orderId
+                );
+                notificationService.pushNotification(
+                    "ORDER",
+                    "Order created",
+                    `OrderId #${orderId.toString()} created successfully`,
+                    orderId.toString(),
+                    userId
                 );
                 return STATUS_PAYMENT_CHECKUPDATE.PROCESS;
             default:

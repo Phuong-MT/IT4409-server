@@ -8,6 +8,7 @@ import {
     ISignatureTranscript,
     paymentService,
 } from "../services/paymeny.service";
+import { notificationService } from "../services/notification.service";
 
 const PAYMENT_METHOD = Contacts.PaymentMethod;
 const DELIVERY = Contacts.Delivery;
@@ -114,9 +115,11 @@ PaymentRouter.post("/payment/creator", auth, async (req, res) => {
         });
     }
 });
-PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
+PaymentRouter.get("/payment/check-update/:id", auth, async (req, res) => {
     try {
         const id = req.params.id;
+        const userId = (req as any).user.id;
+
         if (!id) {
             return res.status(400).json("Invalid error");
         }
@@ -128,11 +131,14 @@ PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
         }
 
         const statusPaymentCheckUpdate =
-            await paymentService.paymentCheckUpdate({
-                orderId,
-                orderType,
-                status,
-            });
+            await paymentService.paymentCheckUpdate(
+                {
+                    orderId,
+                    orderType,
+                    status,
+                },
+                userId
+            );
 
         return res.status(200).json(statusPaymentCheckUpdate);
     } catch (err) {
@@ -148,12 +154,20 @@ PaymentRouter.get("/payment/weeb-hook", (req, res) => {
 
 PaymentRouter.put("/payment/change", auth, async (req, res) => {
     try {
+        const userId = (req as any).user._id;
         const { status, paymentId } = req.body;
         await paymentService.updatePayment(
             {
                 status,
             },
             paymentId
+        );
+        notificationService.pushNotification(
+            "PAYMENT",
+            "Payment update",
+            `Payment #${paymentId.toString()} updated successfully`,
+            paymentId.toString(),
+            userId
         );
         return res.status(200).json(true);
     } catch (err) {

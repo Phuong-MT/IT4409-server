@@ -7,6 +7,7 @@ import { validate } from "../middlewares/validate";
 import { changeOrderSchema, createOrderSchema } from "../dto/order.dto";
 import { Contacts } from "../shared/contacts";
 import { IProductItem } from "../shared/models/order-model";
+import { notificationService } from "../services/notification.service";
 
 const STATUS_ORDER = Contacts.Status.Order;
 const PAYMENT_STATUS = Contacts.Status.Payment;
@@ -220,12 +221,22 @@ OrderRouter.put(
     validate(changeOrderSchema),
     async (req, res) => {
         try {
+            const userId = (req as any).user.id;
             const { statusOrder, orderId } = req.body;
+
             await orderServices.updateOrder(
                 {
                     statusOrder,
                 },
                 orderId
+            );
+
+            notificationService.pushNotification(
+                "ORDER",
+                "Order update",
+                `OrderId #${orderId.toString()} updated successfully`,
+                orderId._id.toString(),
+                userId
             );
             return res.status(200).json(true);
         } catch (err) {

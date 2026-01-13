@@ -6,6 +6,7 @@ import CartModel from "../models/cart-model.mongo";
 import ProductModel from "../models/product-model.mongo";
 import { IProductItem } from "../shared/models/order-model";
 import { Contacts } from "../shared/contacts";
+import { notificationService } from "./notification.service";
 
 const STATUS_ORDER = Contacts.Status.Order;
 const PAYMENT_STATUS = Contacts.Status.Payment;
@@ -204,6 +205,9 @@ class OrderService {
             );
 
             await session.commitTransaction();
+            // --- BẮT ĐẦU ĐOẠN BẮN THÔNG BÁO ---
+            const createdOrder = newOrders[0]; // Lấy object đơn hàng ra khỏi mảng
+
             return newOrders[0]; // Trả về đơn hàng vừa tạo
         } catch (error) {
             await session.abortTransaction();
