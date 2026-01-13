@@ -1,20 +1,17 @@
-import express from "express";
 import { Request, Response } from "express";
-import mongoose, { get } from "mongoose";
-import { Product } from "../shared/models/product-model";
+import mongoose from "mongoose";
 import CategoryModel from "../models/category-model.mongo";
-import ProductModel, {
-    ProductModelDocument,
-} from "../models/product-model.mongo";
+import ProductModel from "../models/product-model.mongo";
 import { Contacts } from "../shared/contacts";
 import { getArray, setArray } from "../cache/redisUtils";
 import { notificationService } from "./notification.service";
-import { NotificationTye } from "../shared/models/notification-model";
+
 const STATUS_EVALUATION = Contacts.Status.Evaluation;
 const LIMIT = 20;
+
 export const addProduct = async (req: Request, res: Response) => {
     try {
-        const userId = (req as any).user._id;
+        const userId = (req as any).user.id;
         const {
             title,
             brand,
@@ -78,88 +75,6 @@ export const addProduct = async (req: Request, res: Response) => {
         });
     }
 };
-// export const getAllProducts = async (req: Request, res: Response) => {
-//     const { page, sort, idCategory, minPrice, maxPrice } = req.query;
-//     const redis = await getRedisClient();
-
-//     const limitNum = 10;
-//     const pageNum = Math.max(Number(page) || 1, 1);
-//     const skip = (pageNum - 1) * limitNum;
-
-//     // TẠO CACHE KEY theo bộ lọc của người dùng
-//     const cacheKey = `products:query:${JSON.stringify(req.query)}`;
-
-//     try {
-//         // 1. Kiểm tra Redis trước (Cache trang kết quả)
-//         const cached = await redis.get(cacheKey);
-//         if (cached) return res.status(200).json(JSON.parse(cached));
-
-//
-//         const pipeline: any[] = [
-//             { $match: { isHide: STATUS_EVALUATION.PUBLIC } }
-//         ];
-
-//         // Lọc theo Category nếu có
-//         if (idCategory) {
-//             pipeline.push({ $match: { categoryId: { $in: Array.isArray(idCategory) ? idCategory : [idCategory] } } });
-//         }
-
-//         pipeline.push({
-//             $addFields: {
-//                 representativeVariant: { $arrayElemAt: ["$variants", 0] }
-//             }
-//         });
-
-//         // Lấy giá từ variant đại diện đó
-//         pipeline.push({
-//             $addFields: { repPrice: "$representativeVariant.price" }
-//         });
-
-//         // Lọc theo khoảng giá dựa trên giá đại diện
-//         const priceFilter: any = {};
-//         if (minPrice) priceFilter.$gte = Number(minPrice);
-//         if (maxPrice) priceFilter.$lte = Number(maxPrice);
-//         if (Object.keys(priceFilter).length > 0) {
-//             pipeline.push({ $match: { repPrice: priceFilter } });
-//         }
-
-//         // Sắp xếp theo giá đại diện
-//         let sortStage: any = { createdAt: -1 }; // Mặc định mới nhất
-//         if (sort === 'price_asc') sortStage = { repPrice: 1 };
-//         if (sort === 'price_desc') sortStage = { repPrice: -1 };
-//         pipeline.push({ $sort: sortStage });
-
-//         // Phân trang tại DB và lấy tổng số lượng đồng thời
-//         pipeline.push({
-//             $facet: {
-//                 metadata: [{ $count: "total" }],
-//                 data: [{ $skip: skip }, { $limit: limitNum }]
-//             }
-//         });
-
-//         const result = await ProductModel.aggregate(pipeline);
-
-//         const products = result[0].data;
-//         const total = result[0].metadata[0]?.total || 0;
-
-//         const responseData = {
-//             data: products,
-//             pagination: {
-//                 page: pageNum,
-//                 limit: limitNum,
-//                 total,
-//                 totalPages: Math.ceil(total / limitNum)
-//             }
-//         };
-
-//         // 3. LƯU VÀO REDIS (Ví dụ 5 phút)
-//         await redis.set(cacheKey, JSON.stringify(responseData), { EX: 300 });
-
-//         res.status(200).json(responseData);
-//     } catch (error) {
-//         res.status(500).json({ message: 'Error', error });
-//     }
-// }
 
 export const getAllProducts = async (req: Request, res: Response) => {
     try {
@@ -260,7 +175,7 @@ export const getProductById = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const productId = req.params.id;
-        const userId = (req as any).user._id;
+        const userId = (req as any).user.id;
 
         if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({ message: "Invalid product id" });
@@ -296,7 +211,7 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const changeProductStatus = async (req: Request, res: Response) => {
     try {
         const productId = req.params.id;
-        const userId = (req as any).user._id;
+        const userId = (req as any).user.id;
 
         if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({ message: "Invalid product id" });

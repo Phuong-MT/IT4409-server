@@ -117,7 +117,7 @@ PaymentRouter.post("/payment/creator", auth, async (req, res) => {
 PaymentRouter.get("/payment/check-update/:id", auth, async (req, res) => {
     try {
         const id = req.params.id;
-        const userId = (req as any).user._id;
+        const userId = (req as any).user.id;
 
         if (!id) {
             return res.status(400).json("Invalid error");
