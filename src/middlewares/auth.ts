@@ -12,7 +12,7 @@ export const auth = async (req, res, next) => {
 
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.COOKIE_SECURE === "true",
+        secure: process.env.PROD === "true",
         sameSite: "lax",
         domain: process.env.COOKIE_DOMAIN || undefined,
         path: "/",
