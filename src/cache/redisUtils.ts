@@ -51,3 +51,15 @@ export async function deleteKey(key: string) {
     const client = await getRedisClient();
     return client.del(key);
 }
+
+export async function deleteKeysByPattern(pattern: string) {
+    const client = await getRedisClient();
+    // 1. Tìm tất cả các key khớp với pattern (VD: "products:base_mapped:*")
+    const keys = await client.keys(pattern);
+    
+    // 2. Nếu tìm thấy key thì xóa
+    if (keys.length > 0) {
+        return client.del(keys);
+    }
+    return 0;
+}
