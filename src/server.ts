@@ -75,7 +75,9 @@ try {
 } catch (error: any) {
     console.log("error ", error);
 }
-const server = httpServer.listen(process.env.PORT || 4001, function () {
+
+const PORT = process.env.PORT || 4001;
+const server = httpServer.listen(PORT as number, "0.0.0.0", function () {
     //start server
     const addressInfo: string | AddressInfo | null = server.address();
     const port =
