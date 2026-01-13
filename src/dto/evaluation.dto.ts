@@ -1,6 +1,5 @@
 import * as yup from "yup";
 import { Contacts } from "../shared/contacts";
-import validator from "validator";
 import mongoose from "mongoose";
 const STATUS_EVALUATION = Contacts.Status.Evaluation;
 
@@ -21,13 +20,6 @@ export const evaluationSchema = yup.object({
     content: yup
         .array()
         .of(yup.string().required("Content item is required"))
-        .transform((value: string[]) => {
-            return value.map(item => {
-                const trimmed = item.trim();
-                // 2. Escape các ký tự đặc biệt (<, >, &, ", ')
-                return validator.escape(trimmed);
-            });
-        })
         .default([]),
 
     isHide : yup
