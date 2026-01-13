@@ -20,6 +20,7 @@ import { createSocketServer } from "./utils/socket.config";
 import { registerSocketListeners } from "./socket/socket.bootstrap";
 import UploadRouter from "./routes/upload.router";
 import ReportRouter from "./routes/report.router";
+import NotificationRouter from "./routes/notification.router";
 
 const app = express();
 const httpServer = createServer(app);
@@ -67,6 +68,7 @@ try {
     app.use("/api", WishListRouter);
     app.use("/api", UploadRouter);
     app.use("/api", ReportRouter);
+    app.use("/api", NotificationRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });
