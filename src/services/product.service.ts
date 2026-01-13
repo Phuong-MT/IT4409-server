@@ -53,11 +53,11 @@ export const addProduct = async (req: Request, res: Response) => {
         notificationService.pushNotification(
             "PRODUCT",
             "Product created",
-            "Product created successfully",
+            `ProductId #${savedProduct._id.toString()} created successfully`,
             savedProduct._id.toString(),
-            userId,
+            userId
         );
-        
+
         return res.status(201).json({
             success: true,
             message: "Add product successfully",
@@ -260,6 +260,7 @@ export const getProductById = async (req: Request, res: Response) => {
 export const updateProduct = async (req: Request, res: Response) => {
     try {
         const productId = req.params.id;
+        const userId = (req as any).user._id;
 
         if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({ message: "Invalid product id" });
@@ -279,6 +280,13 @@ export const updateProduct = async (req: Request, res: Response) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: "Product not found" });
         }
+        notificationService.pushNotification(
+            "PRODUCT",
+            "Product Update",
+            `ProductId #${updatedProduct._id.toString()} updated successfully`,
+            updatedProduct._id.toString(),
+            userId
+        );
         res.status(200).json(updatedProduct);
     } catch (error) {
         res.status(500).json({ message: "Failed to update product", error });
@@ -288,6 +296,8 @@ export const updateProduct = async (req: Request, res: Response) => {
 export const changeProductStatus = async (req: Request, res: Response) => {
     try {
         const productId = req.params.id;
+        const userId = (req as any).user._id;
+
         if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({ message: "Invalid product id" });
         }
@@ -324,6 +334,15 @@ export const changeProductStatus = async (req: Request, res: Response) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: "Product not found" });
         }
+
+        notificationService.pushNotification(
+            "PRODUCT",
+            "Product Update",
+            `ProductId #${updatedProduct._id.toString()} updated successfully`,
+            updatedProduct._id.toString(),
+            userId
+        );
+
         res.status(200).json({
             message: `Change status to ${status} successfully`,
         });

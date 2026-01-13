@@ -114,9 +114,11 @@ PaymentRouter.post("/payment/creator", auth, async (req, res) => {
         });
     }
 });
-PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
+PaymentRouter.get("/payment/check-update/:id", auth, async (req, res) => {
     try {
         const id = req.params.id;
+        const userId = (req as any).user._id;
+
         if (!id) {
             return res.status(400).json("Invalid error");
         }
@@ -128,11 +130,14 @@ PaymentRouter.get("/payment/check-update/:id", async (req, res) => {
         }
 
         const statusPaymentCheckUpdate =
-            await paymentService.paymentCheckUpdate({
-                orderId,
-                orderType,
-                status,
-            });
+            await paymentService.paymentCheckUpdate(
+                {
+                    orderId,
+                    orderType,
+                    status,
+                },
+                userId
+            );
 
         return res.status(200).json(statusPaymentCheckUpdate);
     } catch (err) {
