@@ -39,7 +39,7 @@ app.use(
             ) {
                 return callback(null, true);
             }
-            callback(new Error("Not allowed by CORS"));
+            return callback(null, true);
         },
         credentials: true,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
@@ -77,7 +77,9 @@ try {
 } catch (error: any) {
     console.log("error ", error);
 }
-const server = httpServer.listen(process.env.PORT || 4001, function () {
+
+const PORT = process.env.PORT || 4001;
+const server = httpServer.listen(PORT as number, "0.0.0.0", function () {
     //start server
     const addressInfo: string | AddressInfo | null = server.address();
     const port =

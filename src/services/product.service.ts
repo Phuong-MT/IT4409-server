@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import CategoryModel from "../models/category-model.mongo";
 import ProductModel from "../models/product-model.mongo";
 import { Contacts } from "../shared/contacts";
-import { getArray, setArray } from "../cache/redisUtils";
+import { getArray, setArray, deleteKeysByPattern } from "../cache/redisUtils";
 import { notificationService } from "./notification.service";
 
 const STATUS_EVALUATION = Contacts.Status.Evaluation;
@@ -46,6 +46,8 @@ export const addProduct = async (req: Request, res: Response) => {
 
         // 4. Lưu vào database
         const savedProduct = await newProduct.save();
+
+        await deleteKeysByPattern('products:base_mapped:*');
 
         notificationService.pushNotification(
             "PRODUCT",
@@ -195,6 +197,8 @@ export const updateProduct = async (req: Request, res: Response) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: "Product not found" });
         }
+
+        await deleteKeysByPattern('products:base_mapped:*');
         notificationService.pushNotification(
             "PRODUCT",
             "Product Update",
@@ -249,7 +253,7 @@ export const changeProductStatus = async (req: Request, res: Response) => {
         if (!updatedProduct) {
             return res.status(404).json({ message: "Product not found" });
         }
-
+        await deleteKeysByPattern('products:base_mapped:*');
         notificationService.pushNotification(
             "PRODUCT",
             "Product Update",
