@@ -10,8 +10,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
-      - ./mongo-keyfile/keyfile:/etc/mongo-keyfile:ro
-    command: ["mongod", "--replSet", "rs0", "--bind_ip_all", "--keyFile", "/etc/mongo-keyfile"]
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
     networks:
       - backendnet
 
