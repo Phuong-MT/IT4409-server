@@ -18,7 +18,8 @@ import WishListRouter from "./routes/wishList.router";
 import { ElasticSearch } from "../elasticsearch/elastic.client";
 import { createSocketServer } from "./utils/socket.config";
 import { registerSocketListeners } from "./socket/socket.bootstrap";
-import TestRouter from "./routes/test.router";
+import UploadRouter from "./routes/upload.router";
+import ReportRouter from "./routes/report.router";
 
 const app = express();
 const httpServer = createServer(app);
@@ -64,7 +65,8 @@ try {
     app.use("/api", OrderRouter);
     app.use("/api", SearchProductRouter);
     app.use("/api", WishListRouter);
-    app.use("/api", TestRouter);
+    app.use("/api", UploadRouter);
+    app.use("/api", ReportRouter);
     app.use("/api", async function (req, res) {
         res.status(200).json("hello");
     });

@@ -1,4 +1,4 @@
-import mongoose, { PipelineStage } from "mongoose";
+import mongoose, { PipelineStage, Types } from "mongoose";
 import { productTableName } from "../models/product-model.mongo";
 import OrderModel from "../models/order-model.mongo";
 import { IOrder } from "../shared/models/order-model";
@@ -341,6 +341,34 @@ class OrderService {
         ];
         return await OrderModel.aggregate(arg);
     }
+    async getUserDeliveryOrder(userId: string) {
+        const arg: PipelineStage[] = [
+            {
+                $match: {
+                    userId: new mongoose.Types.ObjectId(userId),
+                    statusOrder: Contacts.Status.Order.DELIVERED,
+                },
+            },
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            {
+                $unwind: {
+                    path: "$payment",
+                    preserveNullAndEmptyArrays: true,
+                },
+            },
+            {
+                $sort: { createdAt: -1 },
+            },
+        ];
+        return await OrderModel.aggregate(arg);
+    }
 
     /**
      * [ADMIN] Lấy tất cả đơn hàng HỢP LỆ
@@ -500,6 +528,103 @@ class OrderService {
         } catch (error) {
             throw error;
         }
+    }
+
+    async getOrdersByPaymentStatus({
+        paymentStatus,
+        page = 1,
+        limit = 10,
+        search,
+    }: {
+        paymentStatus: (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS];
+        page?: number;
+        limit?: number;
+        search?: string;
+    }) {
+        const skip = (page - 1) * limit || 0;
+
+        const matchStage: any = {
+            "payment.status": paymentStatus,
+        };
+
+        const searchStage = search
+            ? {
+                  $or: [
+                      ...(Types.ObjectId.isValid(search)
+                          ? [{ _id: new Types.ObjectId(search) }]
+                          : []),
+                      { userId: search },
+                      { userName: { $regex: search, $options: "i" } },
+                      { numberPhone: { $regex: search, $options: "i" } },
+                  ],
+              }
+            : null;
+
+        const pipeline: any[] = [
+            // 1️⃣ Join payment
+            {
+                $lookup: {
+                    from: "payments",
+                    localField: "_id",
+                    foreignField: "orderId",
+                    as: "payment",
+                },
+            },
+            { $unwind: "$payment" },
+
+            // 2️⃣ Filter payment status
+            { $match: matchStage },
+
+            // 3️⃣ Search order info (optional)
+            ...(searchStage ? [{ $match: searchStage }] : []),
+
+            // 4️⃣ Sort mới nhất trước
+            { $sort: { "payment.createdAt": -1 } },
+
+            // 5️⃣ Facet để tách data & total
+            {
+                $facet: {
+                    data: [
+                        { $skip: skip },
+                        { $limit: limit || 10 },
+                        {
+                            $project: {
+                                listProduct: 1,
+                                userId: 1,
+                                userName: 1,
+                                numberPhone: 1,
+                                sumPrice: 1,
+                                statusOrder: 1,
+                                payment: {
+                                    _id: 1,
+                                    method: 1,
+                                    totalMoney: 1,
+                                    discount: 1,
+                                    delivery: 1,
+                                    status: 1,
+                                    createdAt: 1,
+                                },
+                            },
+                        },
+                    ],
+                    total: [{ $count: "count" }],
+                },
+            },
+        ];
+
+        const result = await OrderModel.aggregate(pipeline);
+
+        const total = result[0]?.total[0]?.count || 0;
+
+        return {
+            data: result[0]?.data || [],
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
     }
 }
 

@@ -48,3 +48,8 @@ export const createOrderSchema = yup.object({
 
     numberPhone: yup.string().required("numberPhone is required"),
 });
+
+export const changeOrderSchema = yup.object({
+    orderId: yup.string().required("orderId is required"),
+    statusOrder: yup.number().required("statusOrder is required"),
+});

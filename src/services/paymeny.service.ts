@@ -218,5 +218,13 @@ class PaymentService {
                 return STATUS_PAYMENT_CHECKUPDATE.CANCEL;
         }
     }
+    async updatePayment(params: Partial<IPayment>, paymentId: string) {
+        await PaymentModel.findByIdAndUpdate(
+            new mongoose.Types.ObjectId(paymentId),
+            {
+                ...params,
+            }
+        );
+    }
 }
 export const paymentService = new PaymentService();

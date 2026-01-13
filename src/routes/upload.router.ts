@@ -2,11 +2,11 @@ import express from "express";
 import { uploadImage } from "../middlewares/upload";
 import { uploadImageBuffer } from "../upload/upload.image";
 import { auth } from "../middlewares/auth";
-import { notificationService } from "../services/notification.service";
-const TestRouter = express.Router();
 
-TestRouter.post(
-    "/test/image",
+const UploadRouter = express.Router();
+
+UploadRouter.post(
+    "/upload/image",
     auth,
     uploadImage.single("file"),
     async (req, res) => {
@@ -27,16 +27,4 @@ TestRouter.post(
         }
     }
 );
-TestRouter.post("/test-trigger-notif", async (req, res) => {
-    
-    // Gọi hàm push notification giả lập
-    await notificationService.pushNotification(
-        "TEST_TYPE",
-        "🔔 Test Tiêu đề",
-        "Đây là tin nhắn test từ Postman",
-        { link: "/admin/dashboard" } // Data kèm theo
-    );
-
-    res.json({ message: "Đã bắn thông báo! Kiểm tra socket đi sếp!" });
-});
-export default TestRouter;
+export default UploadRouter;

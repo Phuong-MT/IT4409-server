@@ -4,11 +4,12 @@ import { verifyRole } from "../middlewares/verifyRole";
 import { UserRole } from "../shared/models/user-model";
 import { orderServices } from "../services/order.service";
 import { validate } from "../middlewares/validate";
-import { createOrderSchema } from "../dto/order.dto";
+import { changeOrderSchema, createOrderSchema } from "../dto/order.dto";
 import { Contacts } from "../shared/contacts";
 import { IProductItem } from "../shared/models/order-model";
 
 const STATUS_ORDER = Contacts.Status.Order;
+const PAYMENT_STATUS = Contacts.Status.Payment;
 
 const OrderRouter = express.Router();
 
@@ -148,6 +149,16 @@ OrderRouter.get("/orders/order-return", auth, async (req, res) => {
         return res.status(500).json("Internal server error");
     }
 });
+OrderRouter.get("/orders/order-delivery", auth, async (req, res) => {
+    try {
+        const userId = (req as any).user.id;
+        const listOrder = await orderServices.getUserDeliveryOrder(userId);
+        return res.status(200).json(listOrder);
+    } catch (err) {
+        console.log("get order return error: : ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
 
 OrderRouter.get(
     "/orders/all",
@@ -160,15 +171,66 @@ OrderRouter.get(
             const search = req.query.search as string;
             const status = req.query.status as string;
 
-            const result = await orderServices.getAllOrders(page, limit, search, status);
+            const result = await orderServices.getAllOrders(
+                page,
+                limit,
+                search,
+                status
+            );
 
             return res.status(200).json({
                 message: "Get all orders successfully",
-                data: result
+                data: result,
             });
         } catch (error: any) {
             console.error("Get All Orders Error:", error);
-            return res.status(500).json({ message: "Internal server error", error: error.message });
+            return res.status(500).json({
+                message: "Internal server error",
+                error: error.message,
+            });
+        }
+    }
+);
+
+OrderRouter.get(
+    "/orders/admin/payment",
+    auth,
+    verifyRole([UserRole.ADMIN]),
+    async (req, res) => {
+        try {
+            const { page, paymentStatus, search, limit } = req.query;
+            const response = await orderServices.getOrdersByPaymentStatus({
+                paymentStatus: Number(
+                    paymentStatus
+                ) as (typeof PAYMENT_STATUS)[keyof typeof PAYMENT_STATUS],
+                page: Number(page),
+                search: search as string,
+            });
+            return res.status(200).json(response);
+        } catch (err) {
+            console.log("get order-payment error: ", err);
+            return res.status(500).json("Internal server error");
+        }
+    }
+);
+
+OrderRouter.put(
+    "/orders/change",
+    auth,
+    validate(changeOrderSchema),
+    async (req, res) => {
+        try {
+            const { statusOrder, orderId } = req.body;
+            await orderServices.updateOrder(
+                {
+                    statusOrder,
+                },
+                orderId
+            );
+            return res.status(200).json(true);
+        } catch (err) {
+            console.log("chage status order error: ", err);
+            return res.status(500).json("Internal server error");
         }
     }
 );

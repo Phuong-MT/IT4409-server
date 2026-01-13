@@ -151,4 +151,20 @@ PaymentRouter.get("/payment/weeb-hook", (req, res) => {
     return res.status(200).json("oke");
 });
 
+PaymentRouter.put("/payment/change", auth, async (req, res) => {
+    try {
+        const { status, paymentId } = req.body;
+        await paymentService.updatePayment(
+            {
+                status,
+            },
+            paymentId
+        );
+        return res.status(200).json(true);
+    } catch (err) {
+        console.log("Change status payment error: ", err);
+        return res.status(500).json("Internal server error");
+    }
+});
+
 export default PaymentRouter;
