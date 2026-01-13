@@ -235,7 +235,7 @@ OrderRouter.put(
                 "ORDER",
                 "Order update",
                 `OrderId #${orderId.toString()} updated successfully`,
-                orderId._id.toString(),
+                orderId.toString(),
                 userId
             );
             return res.status(200).json(true);

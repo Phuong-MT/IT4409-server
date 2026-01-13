@@ -46,6 +46,58 @@ class NotificationService {
             { new: true }
         );
     }
+
+    async getAllNotificationsForAdmin({
+        adminId,
+        page = 1,
+        limit = 10,
+    }: {
+        adminId: string;
+        page?: number;
+        limit?: number;
+    }) {
+        const skip = (page - 1) * limit;
+
+        const [items, total] = await Promise.all([
+            NotificationModel.aggregate([
+                { $sort: { createdAt: -1 } },
+
+                { $skip: skip },
+                { $limit: limit },
+
+                {
+                    $addFields: {
+                        readed: {
+                            $in: [{ $toObjectId: adminId }, "$readBy"],
+                        },
+                    },
+                },
+
+                {
+                    $project: {
+                        readBy: 0, // ẩn danh sách readBy nếu không cần
+                    },
+                },
+            ]),
+
+            NotificationModel.countDocuments(),
+        ]);
+
+        return {
+            data: items,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            },
+        };
+    }
+    async countUnreadForAdmin(adminId: string) {
+        return NotificationModel.countDocuments({
+            readBy: { $ne: adminId },
+        });
+    }
 }
 
 export const notificationService = new NotificationService();
