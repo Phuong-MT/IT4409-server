@@ -41,7 +41,7 @@ export const login = async (req: any, res: any) => {
     const cookieOptions = {
         httpOnly: true,
         secure: process.env.PROD === "true", // true in prod
-        sameSite: "lax" as const,
+        sameSite: "none" as const,
         domain: process.env.COOKIE_DOMAIN || undefined,
         path: "/",
     };
