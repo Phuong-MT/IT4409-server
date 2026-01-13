@@ -40,7 +40,7 @@ export const register = async (req: any, res: any) => {
 export const login = async (req: any, res: any) => {
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.COOKIE_SECURE === "true", // true in prod
+        secure: process.env.PROD === "true", // true in prod
         sameSite: "lax" as const,
         domain: process.env.COOKIE_DOMAIN || undefined,
         path: "/",
